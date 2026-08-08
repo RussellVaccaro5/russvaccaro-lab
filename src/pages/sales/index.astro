@@ -1,0 +1,33 @@
+---
+import ExperimentCard from '../../components/ExperimentCard.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import LabLayout from '../../layouts/LabLayout.astro';
+---
+
+<LabLayout
+  title="Sales Tools"
+  description="Browser-only tools for deal qualification and target-account thinking."
+>
+  <PageHeader
+    eyebrow="Sales systems"
+    title="Tools that sharpen judgment"
+    description="These prototypes structure thinking. They do not replace discovery, customer evidence, or deal coaching. Keep confidential account data out of public demos."
+  />
+
+  <div class="card-grid">
+    <ExperimentCard
+      title="MEDDPICC Deal Diagnostic"
+      description="Score the strength of evidence, expose gaps, and identify the next qualification question."
+      href="/sales/meddpicc/"
+      status="Prototype"
+      technologies={['Forms', 'Scoring', 'localStorage']}
+    />
+    <ExperimentCard
+      title="Target Account POV Builder"
+      description="Turn research signals into a concise problem, impact, relevance, and discovery hypothesis."
+      href="/sales/pov-builder/"
+      status="Prototype"
+      technologies={['Forms', 'Templates', 'Clipboard API']}
+    />
+  </div>
+</LabLayout>

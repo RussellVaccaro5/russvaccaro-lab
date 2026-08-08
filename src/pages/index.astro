@@ -1,49 +1,93 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import ExperimentCard from '../components/ExperimentCard.astro';
+import LabLayout from '../layouts/LabLayout.astro';
+import { experiments } from '../data/experiments';
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This template
-				serves as a heavyweight, maximally-styled ending point for anyone looking to build a personal
-				website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to
-				<a href="https://docs.astro.build/">read the docs</a>
-				or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out
-				<a href="https://github.com/Charca/astro-blog-template">astro-blog-template</a>
-				by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
-		</main>
-		<Footer />
-	</body>
-</html>
+<LabLayout
+  title="Lab"
+  description="Small experiments in technical GTM, infrastructure, and personal knowledge tools."
+>
+  <section class="hero">
+    <p class="eyebrow">Russ Vaccaro / Playground</p>
+    <h1>Useful tools.<br />Visible learning.</h1>
+    <p class="lede">
+      A working lab for sales systems, technical concepts, and lightweight software experiments.
+      Each project starts small, ships publicly, and improves when it earns another iteration.
+    </p>
+    <div class="button-row">
+      <a class="button" href="#experiments">Explore experiments</a>
+      <a class="button secondary" href="/changelog/">See what changed</a>
+    </div>
+  </section>
+
+  <section id="experiments" class="section">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">Current work</p>
+        <h2>Experiments</h2>
+      </div>
+      <p>{experiments.length} small builds</p>
+    </div>
+    <div class="card-grid">
+      {
+        experiments.map((experiment) => (
+          <ExperimentCard
+            title={experiment.title}
+            description={experiment.description}
+            href={experiment.href}
+            status={experiment.status}
+            technologies={experiment.technologies}
+          />
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section principles">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">Build rule</p>
+        <h2>Start with the smallest useful version</h2>
+      </div>
+    </div>
+    <ol>
+      <li><strong>Static:</strong> prove the content and layout.</li>
+      <li><strong>Data-driven:</strong> move repeated content into JSON or TypeScript.</li>
+      <li><strong>Interactive:</strong> add forms, filters, and browser state.</li>
+      <li><strong>Connected:</strong> add APIs or a database only when the workflow warrants it.</li>
+    </ol>
+  </section>
+</LabLayout>
+
+<style>
+  .hero {
+    padding: 38px 0 44px;
+  }
+
+  .hero .button-row {
+    margin-top: 28px;
+  }
+
+  .principles {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: 48px;
+  }
+
+  .principles ol {
+    margin: 0;
+    padding-left: 24px;
+  }
+
+  .principles li {
+    margin-bottom: 12px;
+  }
+
+  @media (max-width: 720px) {
+    .principles {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+  }
+</style>
