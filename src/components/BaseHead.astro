@@ -54,3 +54,9 @@ const { title, description, image = FallbackImage } = Astro.props;
 
 <!-- Vercel Web Analytics -->
 <Analytics />
+
+<!-- Vercel Speed Insights -->
+<script>
+	import { injectSpeedInsights } from '@vercel/speed-insights';
+	injectSpeedInsights();
+</script>
