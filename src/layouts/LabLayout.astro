@@ -1,0 +1,93 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const fullTitle = title === 'Lab' ? 'Russ Vaccaro Lab' : `${title} | Russ Vaccaro Lab`;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
+const currentPath = Astro.url.pathname;
+
+const navigation = [
+  { href: '/', label: 'Lab' },
+  { href: '/reading/', label: 'Reading' },
+  { href: '/sales/', label: 'Sales tools' },
+  { href: '/learning/', label: 'Learning' },
+  { href: '/changelog/', label: 'Changelog' },
+];
+
+const isActive = (href: string) =>
+  href === '/' ? currentPath === '/' : currentPath.startsWith(href);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonicalURL} />
+    <title>{fullTitle}</title>
+    <script is:inline>
+      const storedTheme = localStorage.getItem('rv-lab-theme');
+      const preferredTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light';
+      document.documentElement.dataset.theme = storedTheme || preferredTheme;
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a class="site-brand" href="/">RV / Lab</a>
+        <nav aria-label="Primary navigation">
+          <ul class="site-nav">
+            {
+              navigation.map((item) => (
+                <li>
+                  <a
+                    class:list={['site-nav__link', { active: isActive(item.href) }]}
+                    href={item.href}
+                    aria-current={isActive(item.href) ? 'page' : undefined}
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+        <div class="site-actions">
+          <button id="theme-toggle" class="text-button" type="button" aria-label="Toggle color theme">
+            Theme
+          </button>
+          <a class="text-button" href="https://russvaccaro.com">Main site ↗</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="site-main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <p>Small experiments in technical GTM, infrastructure, and personal knowledge tools.</p>
+      <p><a href="https://russvaccaro.com">russvaccaro.com</a></p>
+    </footer>
+
+    <script>
+      const themeButton = document.querySelector<HTMLButtonElement>('#theme-toggle');
+
+      themeButton?.addEventListener('click', () => {
+        const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        document.documentElement.dataset.theme = nextTheme;
+        localStorage.setItem('rv-lab-theme', nextTheme);
+      });
+    </script>
+  </body>
+</html>

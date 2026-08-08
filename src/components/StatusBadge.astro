@@ -1,0 +1,43 @@
+---
+export type Status = 'Active' | 'Prototype' | 'Planned' | 'Archived';
+
+interface Props {
+  status: Status;
+}
+
+const { status } = Astro.props;
+---
+
+<span class:list={['status', status.toLowerCase()]}>{status}</span>
+
+<style>
+  .status {
+    display: inline-flex;
+    padding: 4px 9px;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .active {
+    color: var(--success);
+    background: var(--success-soft);
+  }
+
+  .prototype {
+    color: var(--warning);
+    background: var(--warning-soft);
+  }
+
+  .planned {
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .archived {
+    color: var(--muted);
+    background: var(--background);
+  }
+</style>

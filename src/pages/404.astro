@@ -1,0 +1,30 @@
+---
+import LabLayout from '../layouts/LabLayout.astro';
+---
+
+<LabLayout title="Page not found" description="This route does not exist in the lab.">
+  <section class="not-found">
+    <p class="eyebrow">404 / Wrong turn</p>
+    <h1>This experiment isn’t here.</h1>
+    <p class="lede">The route may have changed, or the prototype may have been archived.</p>
+    <div class="button-row">
+      <a class="button" href="/">Return to the lab</a>
+      <a class="button secondary" href="https://russvaccaro.com">Visit the main site</a>
+    </div>
+  </section>
+</LabLayout>
+
+<style>
+  .not-found {
+    max-width: 760px;
+    padding: 80px 0;
+  }
+
+  h1 {
+    font-size: clamp(2.5rem, 7vw, 5.2rem);
+  }
+
+  .button-row {
+    margin-top: 28px;
+  }
+</style>
