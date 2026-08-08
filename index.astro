@@ -1,0 +1,93 @@
+---
+import ExperimentCard from '../components/ExperimentCard.astro';
+import LabLayout from '../layouts/LabLayout.astro';
+import { experiments } from '../data/experiments';
+---
+
+<LabLayout
+  title="Lab"
+  description="Small experiments in technical GTM, infrastructure, and personal knowledge tools."
+>
+  <section class="hero">
+    <p class="eyebrow">Russ Vaccaro / Playground</p>
+    <h1>Useful tools.<br />Visible learning.</h1>
+    <p class="lede">
+      A working lab for sales systems, technical concepts, and lightweight software experiments.
+      Each project starts small, ships publicly, and improves when it earns another iteration.
+    </p>
+    <div class="button-row">
+      <a class="button" href="#experiments">Explore experiments</a>
+      <a class="button secondary" href="/changelog/">See what changed</a>
+    </div>
+  </section>
+
+  <section id="experiments" class="section">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">Current work</p>
+        <h2>Experiments</h2>
+      </div>
+      <p>{experiments.length} small builds</p>
+    </div>
+    <div class="card-grid">
+      {
+        experiments.map((experiment) => (
+          <ExperimentCard
+            title={experiment.title}
+            description={experiment.description}
+            href={experiment.href}
+            status={experiment.status}
+            technologies={experiment.technologies}
+          />
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section principles">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">Build rule</p>
+        <h2>Start with the smallest useful version</h2>
+      </div>
+    </div>
+    <ol>
+      <li><strong>Static:</strong> prove the content and layout.</li>
+      <li><strong>Data-driven:</strong> move repeated content into JSON or TypeScript.</li>
+      <li><strong>Interactive:</strong> add forms, filters, and browser state.</li>
+      <li><strong>Connected:</strong> add APIs or a database only when the workflow warrants it.</li>
+    </ol>
+  </section>
+</LabLayout>
+
+<style>
+  .hero {
+    padding: 38px 0 44px;
+  }
+
+  .hero .button-row {
+    margin-top: 28px;
+  }
+
+  .principles {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: 48px;
+  }
+
+  .principles ol {
+    margin: 0;
+    padding-left: 24px;
+  }
+
+  .principles li {
+    margin-bottom: 12px;
+  }
+
+  @media (max-width: 720px) {
+    .principles {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+  }
+</style>

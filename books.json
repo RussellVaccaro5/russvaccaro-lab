@@ -1,0 +1,29 @@
+[
+  {
+    "title": "Example: a sales or GTM book",
+    "author": "Replace with the author",
+    "category": "Sales & GTM",
+    "status": "Finished",
+    "rating": 4,
+    "takeaway": "Replace this with the one idea you expect to use again.",
+    "noteUrl": ""
+  },
+  {
+    "title": "Example: a cloud or data book",
+    "author": "Replace with the author",
+    "category": "Technical",
+    "status": "Currently reading",
+    "rating": null,
+    "takeaway": "Capture a precise concept, mechanism, or useful mental model.",
+    "noteUrl": ""
+  },
+  {
+    "title": "Example: a strategy book",
+    "author": "Replace with the author",
+    "category": "Strategy",
+    "status": "Want to read",
+    "rating": null,
+    "takeaway": "Add why this earned a place in the queue.",
+    "noteUrl": ""
+  }
+]
