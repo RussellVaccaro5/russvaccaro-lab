@@ -1,15 +1,5 @@
 [
   {
-    "id": "gap-selling",
-    "title": "Gap Selling",
-    "author": "Keenan",
-    "topic": "Sales",
-    "status": "Finished",
-    "year": 2018,
-    "rating": 5,
-    "note": "Diagnose the gap between a buyer's current and future state instead of leading with product capabilities."
-  },
-  {
     "id": "challenger-sale",
     "title": "The Challenger Sale",
     "author": "Matthew Dixon and Brent Adamson",
@@ -17,87 +7,27 @@
     "status": "Finished",
     "year": 2011,
     "rating": 4,
-    "note": "Commercial insight works when it reframes how the customer understands a costly problem."
+    "note": ""
   },
   {
     "id": "meddicc",
     "title": "MEDDICC",
     "author": "Andy Whyte",
     "topic": "Sales",
-    "status": "Reading",
-    "year": 2020,
-    "rating": null,
-    "note": "Treat qualification fields as evidence standards, not boxes to mark complete."
-  },
-  {
-    "id": "founding-sales",
-    "title": "Founding Sales",
-    "author": "Pete Kazanjy",
-    "topic": "GTM",
     "status": "Queue",
     "year": 2020,
     "rating": null,
-    "note": "A practical operating manual for moving from founder-led selling toward a repeatable motion."
-  },
-  {
-    "id": "good-strategy-bad-strategy",
-    "title": "Good Strategy/Bad Strategy",
-    "author": "Richard Rumelt",
-    "topic": "Strategy",
-    "status": "Finished",
-    "year": 2011,
-    "rating": 5,
-    "note": "Useful strategy combines a diagnosis, a guiding policy, and coherent action."
-  },
-  {
-    "id": "mom-test",
-    "title": "The Mom Test",
-    "author": "Rob Fitzpatrick",
-    "topic": "Discovery",
-    "status": "Finished",
-    "year": 2013,
-    "rating": 4,
-    "note": "Ask about specific past behavior and present constraints instead of collecting compliments."
-  },
-  {
-    "id": "accelerate",
-    "title": "Accelerate",
-    "author": "Nicole Forsgren, Jez Humble, and Gene Kim",
-    "topic": "DevOps",
-    "status": "Reading",
-    "year": 2018,
-    "rating": null,
-    "note": "Connect software delivery practices to measurable organizational performance."
-  },
-  {
-    "id": "ddia",
-    "title": "Designing Data-Intensive Applications",
-    "author": "Martin Kleppmann",
-    "topic": "Data",
-    "status": "Queue",
-    "year": 2017,
-    "rating": null,
-    "note": "A durable map of storage, distributed systems, consistency, and data-processing tradeoffs."
-  },
-  {
-    "id": "zero-trust-networks",
-    "title": "Zero Trust Networks",
-    "author": "Evan Gilman and Doug Barth",
-    "topic": "Security",
-    "status": "Queue",
-    "year": 2017,
-    "rating": null,
-    "note": "Frame zero trust as an architectural system of identity, policy, and continuous verification."
+    "note": ""
   },
   {
     "id": "thinking-in-systems",
     "title": "Thinking in Systems",
     "author": "Donella H. Meadows",
     "topic": "Thinking",
-    "status": "Finished",
+    "status": "Queue",
     "year": 2008,
-    "rating": 5,
-    "note": "Look for stocks, flows, delays, feedback loops, and leverage points behind visible events."
+    "rating": null,
+    "note": ""
   },
   {
     "id": "working-backwards",
@@ -107,7 +37,7 @@
     "status": "Queue",
     "year": 2021,
     "rating": null,
-    "note": "Mechanisms turn operating principles into repeatable decisions and customer-centered execution."
+    "note": ""
   },
   {
     "id": "clear-thinking",
@@ -117,6 +47,986 @@
     "status": "Reading",
     "year": 2023,
     "rating": null,
-    "note": "Create space between stimulus and response so defaults do not make important decisions for you."
+    "note": ""
+  },
+  {
+    "id": "1984",
+    "title": "1984",
+    "author": "George Orwell",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1949,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "animal-farm",
+    "title": "Animal Farm",
+    "author": "George Orwell",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1945,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "atlas-shrugged",
+    "title": "Atlas Shrugged",
+    "author": "Ayn Rand",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1957,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "beyond-good-and-evil",
+    "title": "Beyond Good and Evil",
+    "author": "Friedrich Nietzsche",
+    "topic": "Philosophy",
+    "status": "Finished",
+    "year": 1886,
+    "rating": 5,
+    "note": ""
+  },
+  {
+    "id": "the-big-short-inside-the-doomsday-machine",
+    "title": "The Big Short: Inside the Doomsday Machine",
+    "author": "Michael Lewis",
+    "topic": "Finance",
+    "status": "Finished",
+    "year": 2010,
+    "rating": 5,
+    "note": ""
+  },
+  {
+    "id": "blood-meridian-or-the-evening-redness-in-the-west",
+    "title": "Blood Meridian, or, the Evening Redness in the West",
+    "author": "Cormac McCarthy",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1985,
+    "rating": 5,
+    "note": ""
+  },
+  {
+    "id": "brave-new-world",
+    "title": "Brave New World",
+    "author": "Aldous Huxley",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1932,
+    "rating": 5,
+    "note": ""
+  },
+  {
+    "id": "bubble-in-the-sun-the-florida-boom-of-the-1920s-and-how-it-brought-on-the-great-depression",
+    "title": "Bubble in the Sun: The Florida Boom of the 1920s and How It Brought on the Great Depression",
+    "author": "Christopher Knowlton",
+    "topic": "History",
+    "status": "Finished",
+    "year": 2020,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "candide",
+    "title": "Candide",
+    "author": "Voltaire",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1759,
+    "rating": 5,
+    "note": ""
+  },
+  {
+    "id": "chip-war-the-fight-for-the-world-s-most-critical-technology",
+    "title": "Chip War: The Fight for the World's Most Critical Technology",
+    "author": "Chris Miller",
+    "topic": "Technology",
+    "status": "Finished",
+    "year": 2022,
+    "rating": 5,
+    "note": ""
+  },
+  {
+    "id": "a-confederacy-of-dunces",
+    "title": "A Confederacy of Dunces",
+    "author": "John Kennedy Toole",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1980,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "confessions-of-an-economic-hit-man",
+    "title": "Confessions of an Economic Hit Man",
+    "author": "John Perkins",
+    "topic": "Economics",
+    "status": "Finished",
+    "year": 2004,
+    "rating": 3,
+    "note": ""
+  },
+  {
+    "id": "the-count-of-monte-cristo",
+    "title": "The Count of Monte Cristo",
+    "author": "Alexandre Dumas",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1844,
+    "rating": 5,
+    "note": ""
+  },
+  {
+    "id": "crime-and-punishment",
+    "title": "Crime and Punishment",
+    "author": "Fyodor Dostoevsky",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1866,
+    "rating": 5,
+    "note": ""
+  },
+  {
+    "id": "the-cuckoo-s-egg-tracking-a-spy-through-the-maze-of-computer-espionage",
+    "title": "The Cuckoo's Egg: Tracking a Spy Through the Maze of Computer Espionage",
+    "author": "Clifford Stoll",
+    "topic": "Security",
+    "status": "Finished",
+    "year": 1989,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "deep-nutrition-why-your-genes-need-traditional-food",
+    "title": "Deep Nutrition: Why Your Genes Need Traditional Food",
+    "author": "Catherine Shanahan",
+    "topic": "Health",
+    "status": "Finished",
+    "year": 2008,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "deep-work-rules-for-focused-success-in-a-distracted-world",
+    "title": "Deep Work: Rules for Focused Success in a Distracted World",
+    "author": "Cal Newport",
+    "topic": "Productivity",
+    "status": "Finished",
+    "year": 2016,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "double-cross-the-explosive-inside-story-of-the-mobster-who-controlled-america",
+    "title": "Double Cross: The Explosive, Inside Story of the Mobster Who Controlled America",
+    "author": "Sam Giancana",
+    "topic": "History",
+    "status": "Finished",
+    "year": 1992,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "dune",
+    "title": "Dune",
+    "author": "Frank Herbert",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1965,
+    "rating": 5,
+    "note": ""
+  },
+  {
+    "id": "economics-in-one-lesson",
+    "title": "Economics in One Lesson",
+    "author": "Henry Hazlitt",
+    "topic": "Economics",
+    "status": "Finished",
+    "year": 1946,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "exactly-what-to-say-the-magic-words-for-influence-and-impact",
+    "title": "Exactly What to Say: The Magic Words for Influence and Impact",
+    "author": "Phil M. Jones",
+    "topic": "Sales",
+    "status": "Finished",
+    "year": 2017,
+    "rating": 3,
+    "note": ""
+  },
+  {
+    "id": "fanatical-prospecting-the-ultimate-guide-to-opening-sales-conversations-and-filling-the-pipeline-by-leveraging-social-selling-telephone-email-text-and-cold-calling",
+    "title": "Fanatical Prospecting: The Ultimate Guide to Opening Sales Conversations and Filling the Pipeline by Leveraging Social Selling, Telephone, Email, Text, and Cold Calling",
+    "author": "Jeb Blount",
+    "topic": "Sales",
+    "status": "Finished",
+    "year": 2015,
+    "rating": 3,
+    "note": ""
+  },
+  {
+    "id": "fear-and-loathing-in-las-vegas-a-savage-journey-to-the-heart-of-the-american-dream",
+    "title": "Fear and Loathing in Las Vegas: A Savage Journey to the Heart of the American Dream",
+    "author": "Hunter S. Thompson",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1972,
+    "rating": 5,
+    "note": ""
+  },
+  {
+    "id": "the-fellowship-of-the-ring",
+    "title": "The Fellowship of the Ring",
+    "author": "J.R.R. Tolkien",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1954,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "freakonomics-a-rogue-economist-explores-the-hidden-side-of-everything",
+    "title": "Freakonomics: A Rogue Economist Explores the Hidden Side of Everything",
+    "author": "Steven D. Levitt",
+    "topic": "Economics",
+    "status": "Finished",
+    "year": 2005,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "godfather-of-the-kremlin-the-decline-of-russia-in-the-age-of-gangster-capitalism",
+    "title": "Godfather of the Kremlin: The Decline of Russia in the Age of Gangster Capitalism",
+    "author": "Paul Klebnikov",
+    "topic": "History",
+    "status": "Finished",
+    "year": 2000,
+    "rating": 5,
+    "note": ""
+  },
+  {
+    "id": "great-expectations",
+    "title": "Great Expectations",
+    "author": "Charles Dickens",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1861,
+    "rating": 5,
+    "note": ""
+  },
+  {
+    "id": "the-great-gatsby",
+    "title": "The Great Gatsby",
+    "author": "F. Scott Fitzgerald",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1925,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "heart-of-darkness",
+    "title": "Heart of Darkness",
+    "author": "Joseph Conrad",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1899,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "hillbilly-elegy-a-memoir-of-a-family-and-culture-in-crisis",
+    "title": "Hillbilly Elegy: A Memoir of a Family and Culture in Crisis",
+    "author": "J.D. Vance",
+    "topic": "Memoir",
+    "status": "Finished",
+    "year": 2016,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "the-hobbit-or-there-and-back-again",
+    "title": "The Hobbit, or There and Back Again",
+    "author": "J.R.R. Tolkien",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1937,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "how-to-fail-at-almost-everything-and-still-win-big-kind-of-the-story-of-my-life",
+    "title": "How to Fail at Almost Everything and Still Win Big: Kind of the Story of My Life",
+    "author": "Scott Adams",
+    "topic": "Career",
+    "status": "Finished",
+    "year": 2013,
+    "rating": 3,
+    "note": ""
+  },
+  {
+    "id": "how-to-lie-with-statistics",
+    "title": "How to Lie with Statistics",
+    "author": "Darrell Huff",
+    "topic": "Statistics",
+    "status": "Finished",
+    "year": 1954,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "how-would-you-move-mount-fuji-microsoft-s-cult-of-the-puzzle-how-the-world-s-smartest-companies-select-the-most-creative-thinkers",
+    "title": "How Would You Move Mount Fuji? Microsoft's Cult of the Puzzle—How the World's Smartest Companies Select the Most Creative Thinkers",
+    "author": "William Poundstone",
+    "topic": "Career",
+    "status": "Finished",
+    "year": 2003,
+    "rating": 2,
+    "note": ""
+  },
+  {
+    "id": "the-human-factor-inside-the-cia-s-dysfunctional-intelligence-culture",
+    "title": "The Human Factor: Inside the CIA's Dysfunctional Intelligence Culture",
+    "author": "Ishmael Jones",
+    "topic": "Politics",
+    "status": "Finished",
+    "year": 2008,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "the-hypomanic-edge-the-link-between-a-little-craziness-and-a-lot-of-success-in-america",
+    "title": "The Hypomanic Edge: The Link Between (A Little) Craziness and (A Lot of) Success in America",
+    "author": "John Gartner",
+    "topic": "Psychology",
+    "status": "Finished",
+    "year": 2005,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "the-idiot",
+    "title": "The Idiot",
+    "author": "Fyodor Dostoevsky",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1869,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "impro-improvisation-and-the-theatre",
+    "title": "Impro: Improvisation and the Theatre",
+    "author": "Keith Johnstone",
+    "topic": "Communication",
+    "status": "Finished",
+    "year": 1979,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "influence-the-psychology-of-persuasion",
+    "title": "Influence: The Psychology of Persuasion",
+    "author": "Robert B. Cialdini",
+    "topic": "Psychology",
+    "status": "Finished",
+    "year": 1984,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "into-the-wild",
+    "title": "Into the Wild",
+    "author": "Jon Krakauer",
+    "topic": "Biography",
+    "status": "Finished",
+    "year": 1996,
+    "rating": 3,
+    "note": ""
+  },
+  {
+    "id": "the-judgment-and-other-stories",
+    "title": "The Judgment and Other Stories",
+    "author": "Franz Kafka",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1913,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "lessons-from-the-titans-what-companies-in-the-new-economy-can-learn-from-the-great-industrial-giants-to-drive-sustainable-success",
+    "title": "Lessons from the Titans: What Companies in the New Economy Can Learn from the Great Industrial Giants to Drive Sustainable Success",
+    "author": "Scott Davis",
+    "topic": "Business",
+    "status": "Finished",
+    "year": 2020,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "liar-s-poker",
+    "title": "Liar's Poker",
+    "author": "Michael Lewis",
+    "topic": "Finance",
+    "status": "Finished",
+    "year": 1989,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "the-lord-of-the-rings",
+    "title": "The Lord of the Rings",
+    "author": "J.R.R. Tolkien",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1954,
+    "rating": 5,
+    "note": ""
+  },
+  {
+    "id": "meditations",
+    "title": "Meditations",
+    "author": "Marcus Aurelius",
+    "topic": "Philosophy",
+    "status": "Finished",
+    "year": 180,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "the-metamorphosis",
+    "title": "The Metamorphosis",
+    "author": "Franz Kafka",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1915,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "mine-were-of-trouble",
+    "title": "Mine Were of Trouble",
+    "author": "Peter Kemp",
+    "topic": "Memoir",
+    "status": "Finished",
+    "year": 1957,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "more-money-than-god-hedge-funds-and-the-making-of-a-new-elite",
+    "title": "More Money Than God: Hedge Funds and the Making of a New Elite",
+    "author": "Sebastian Mallaby",
+    "topic": "Finance",
+    "status": "Finished",
+    "year": 2010,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "never-split-the-difference-negotiating-as-if-your-life-depended-on-it",
+    "title": "Never Split the Difference: Negotiating As If Your Life Depended on It",
+    "author": "Chris Voss",
+    "topic": "Negotiation",
+    "status": "Finished",
+    "year": 2016,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "notes-from-the-underground",
+    "title": "Notes from the Underground",
+    "author": "Fyodor Dostoevsky",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1864,
+    "rating": 5,
+    "note": ""
+  },
+  {
+    "id": "on-the-genealogy-of-morals-ecce-homo",
+    "title": "On the Genealogy of Morals / Ecce Homo",
+    "author": "Friedrich Nietzsche",
+    "topic": "Philosophy",
+    "status": "Finished",
+    "year": 1887,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "on-the-road-the-original-scroll",
+    "title": "On the Road: The Original Scroll",
+    "author": "Jack Kerouac",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 2007,
+    "rating": 5,
+    "note": ""
+  },
+  {
+    "id": "the-outfit-the-role-of-chicago-s-underworld-in-the-shaping-of-modern-america",
+    "title": "The Outfit: The Role of Chicago's Underworld in the Shaping of Modern America",
+    "author": "Gus Russo",
+    "topic": "History",
+    "status": "Finished",
+    "year": 2001,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "outliers-the-story-of-success",
+    "title": "Outliers: The Story of Success",
+    "author": "Malcolm Gladwell",
+    "topic": "Psychology",
+    "status": "Finished",
+    "year": 2008,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "the-outsiders",
+    "title": "The Outsiders",
+    "author": "S.E. Hinton",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1967,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "patriotism",
+    "title": "Patriotism",
+    "author": "Yukio Mishima",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1961,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "pitch-anything-an-innovative-method-for-presenting-persuading-and-winning-the-deal",
+    "title": "Pitch Anything: An Innovative Method for Presenting, Persuading, and Winning the Deal",
+    "author": "Oren Klaff",
+    "topic": "Sales",
+    "status": "Finished",
+    "year": 2011,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "pitch-perfect-how-to-say-it-right-the-first-time-every-time",
+    "title": "Pitch Perfect: How to Say It Right the First Time, Every Time",
+    "author": "Bill McGowan",
+    "topic": "Communication",
+    "status": "Finished",
+    "year": 2014,
+    "rating": 3,
+    "note": ""
+  },
+  {
+    "id": "the-power-law-venture-capital-and-the-making-of-the-new-future",
+    "title": "The Power Law: Venture Capital and the Making of the New Future",
+    "author": "Sebastian Mallaby",
+    "topic": "Finance",
+    "status": "Finished",
+    "year": 2022,
+    "rating": 5,
+    "note": ""
+  },
+  {
+    "id": "the-prince",
+    "title": "The Prince",
+    "author": "Niccolò Machiavelli",
+    "topic": "Philosophy",
+    "status": "Finished",
+    "year": 1532,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "propaganda",
+    "title": "Propaganda",
+    "author": "Edward L. Bernays",
+    "topic": "Communication",
+    "status": "Finished",
+    "year": 1928,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "psycho-cybernetics-a-new-way-to-get-more-living-out-of-life",
+    "title": "Psycho-Cybernetics: A New Way to Get More Living Out of Life",
+    "author": "Maxwell Maltz",
+    "topic": "Psychology",
+    "status": "Finished",
+    "year": 1960,
+    "rating": 5,
+    "note": ""
+  },
+  {
+    "id": "the-qualified-sales-leader-proven-lessons-from-a-five-time-cro",
+    "title": "The Qualified Sales Leader: Proven Lessons from a Five-Time CRO",
+    "author": "John McMahon",
+    "topic": "Sales",
+    "status": "Finished",
+    "year": 2020,
+    "rating": 5,
+    "note": ""
+  },
+  {
+    "id": "a-republic-not-an-empire-reclaiming-america-s-destiny",
+    "title": "A Republic, Not an Empire: Reclaiming America's Destiny",
+    "author": "Patrick J. Buchanan",
+    "topic": "Politics",
+    "status": "Finished",
+    "year": 1999,
+    "rating": 5,
+    "note": ""
+  },
+  {
+    "id": "the-road",
+    "title": "The Road",
+    "author": "Cormac McCarthy",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 2006,
+    "rating": 5,
+    "note": ""
+  },
+  {
+    "id": "runaway-horses",
+    "title": "Runaway Horses",
+    "author": "Yukio Mishima",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1969,
+    "rating": 5,
+    "note": ""
+  },
+  {
+    "id": "the-sailor-who-fell-from-grace-with-the-sea",
+    "title": "The Sailor Who Fell from Grace with the Sea",
+    "author": "Yukio Mishima",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1963,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "sapiens-a-brief-history-of-humankind",
+    "title": "Sapiens: A Brief History of Humankind",
+    "author": "Yuval Noah Harari",
+    "topic": "History",
+    "status": "Finished",
+    "year": 2011,
+    "rating": 3,
+    "note": ""
+  },
+  {
+    "id": "sell-without-selling-out-a-guide-to-success-on-your-own-terms",
+    "title": "Sell Without Selling Out: A Guide to Success on Your Own Terms",
+    "author": "Andy Paul",
+    "topic": "Sales",
+    "status": "Finished",
+    "year": 2021,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "selling-with-the-art-of-selling-with-champions-to-shape-internal-buying-conversations-close-enterprise-deals",
+    "title": "Selling With: The Art of Selling with Champions to Shape Internal Buying Conversations & Close Enterprise Deals",
+    "author": "Nate Nasralla",
+    "topic": "Sales",
+    "status": "Finished",
+    "year": 2022,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "seven-seconds-or-less-my-season-on-the-bench-with-the-runnin-and-gunnin-phoenix-suns",
+    "title": "Seven Seconds or Less: My Season on the Bench with the Runnin' and Gunnin' Phoenix Suns",
+    "author": "Jack McCallum",
+    "topic": "Sports",
+    "status": "Finished",
+    "year": 2006,
+    "rating": 3,
+    "note": ""
+  },
+  {
+    "id": "so-good-they-can-t-ignore-you-why-skills-trump-passion-in-the-quest-for-work-you-love",
+    "title": "So Good They Can't Ignore You: Why Skills Trump Passion in the Quest for Work You Love",
+    "author": "Cal Newport",
+    "topic": "Career",
+    "status": "Finished",
+    "year": 2012,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "the-sovereign-individual-mastering-the-transition-to-the-information-age",
+    "title": "The Sovereign Individual: Mastering the Transition to the Information Age",
+    "author": "James Dale Davidson",
+    "topic": "Technology",
+    "status": "Finished",
+    "year": 1997,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "speak-memorably-the-art-of-captivating-an-audience-strategies-for-breaking-free-from-sameness-and-selling-ideas-with-conviction",
+    "title": "Speak, Memorably: The Art of Captivating an Audience—Strategies for Breaking Free from Sameness and Selling Ideas with Conviction",
+    "author": "Bill McGowan",
+    "topic": "Communication",
+    "status": "Finished",
+    "year": 2024,
+    "rating": 3,
+    "note": ""
+  },
+  {
+    "id": "starship-troopers",
+    "title": "Starship Troopers",
+    "author": "Robert A. Heinlein",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1959,
+    "rating": 5,
+    "note": ""
+  },
+  {
+    "id": "the-stranger",
+    "title": "The Stranger",
+    "author": "Albert Camus",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1942,
+    "rating": 5,
+    "note": ""
+  },
+  {
+    "id": "sun-steel",
+    "title": "Sun & Steel",
+    "author": "Yukio Mishima",
+    "topic": "Philosophy",
+    "status": "Finished",
+    "year": 1968,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "surely-you-re-joking-mr-feynman-adventures-of-a-curious-character",
+    "title": "“Surely You're Joking, Mr. Feynman!”: Adventures of a Curious Character",
+    "author": "Richard Feynman",
+    "topic": "Memoir",
+    "status": "Finished",
+    "year": 1985,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "surveillance-valley-the-rise-of-the-military-digital-complex",
+    "title": "Surveillance Valley: The Rise of the Military-Digital Complex",
+    "author": "Yasha Levine",
+    "topic": "Technology",
+    "status": "Finished",
+    "year": 2018,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "a-tale-of-two-cities",
+    "title": "A Tale of Two Cities",
+    "author": "Charles Dickens",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1859,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "the-eternal-pursuit-of-unhappyness",
+    "title": "The Eternal Pursuit of Unhappyness",
+    "author": "David Ogilvy",
+    "topic": "Business",
+    "status": "Finished",
+    "year": 2008,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "the-storm-of-steel",
+    "title": "The Storm of Steel",
+    "author": "Ernst Jünger",
+    "topic": "Memoir",
+    "status": "Finished",
+    "year": 1920,
+    "rating": 5,
+    "note": ""
+  },
+  {
+    "id": "there-is-no-antimemetics-division",
+    "title": "There Is No Antimemetics Division",
+    "author": "qntm",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 2020,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "think-and-grow-rich",
+    "title": "Think and Grow Rich",
+    "author": "Napoleon Hill",
+    "topic": "Business",
+    "status": "Finished",
+    "year": 1937,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "thus-spoke-zarathustra",
+    "title": "Thus Spoke Zarathustra",
+    "author": "Friedrich Nietzsche",
+    "topic": "Philosophy",
+    "status": "Finished",
+    "year": 1883,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "tools-of-titans-the-tactics-routines-and-habits-of-billionaires-icons-and-world-class-performers",
+    "title": "Tools of Titans: The Tactics, Routines, and Habits of Billionaires, Icons, and World-Class Performers",
+    "author": "Timothy Ferriss",
+    "topic": "Business",
+    "status": "Finished",
+    "year": 2016,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "tracers-in-the-dark-the-global-hunt-for-the-crime-lords-of-cryptocurrency",
+    "title": "Tracers in the Dark: The Global Hunt for the Crime Lords of Cryptocurrency",
+    "author": "Andy Greenberg",
+    "topic": "Security",
+    "status": "Finished",
+    "year": 2022,
+    "rating": 5,
+    "note": ""
+  },
+  {
+    "id": "treasure-island",
+    "title": "Treasure Island",
+    "author": "Robert Louis Stevenson",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1883,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "under-western-eyes",
+    "title": "Under Western Eyes",
+    "author": "Joseph Conrad",
+    "topic": "Fiction",
+    "status": "Finished",
+    "year": 1911,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "walden-or-life-in-the-woods",
+    "title": "Walden, or Life in the Woods",
+    "author": "Henry David Thoreau",
+    "topic": "Philosophy",
+    "status": "Finished",
+    "year": 1854,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "war-is-a-racket",
+    "title": "War Is a Racket",
+    "author": "Smedley D. Butler",
+    "topic": "Politics",
+    "status": "Finished",
+    "year": 1935,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "when-prophecy-fails-a-social-and-psychological-study-of-a-modern-group-that-predicted-the-destruction-of-the-world",
+    "title": "When Prophecy Fails: A Social and Psychological Study of a Modern Group That Predicted the Destruction of the World",
+    "author": "Leon Festinger",
+    "topic": "Psychology",
+    "status": "Finished",
+    "year": 1956,
+    "rating": 3,
+    "note": ""
+  },
+  {
+    "id": "the-will-to-power",
+    "title": "The Will to Power",
+    "author": "Friedrich Nietzsche",
+    "topic": "Philosophy",
+    "status": "Finished",
+    "year": 1901,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "winning-through-intimidation",
+    "title": "Winning Through Intimidation",
+    "author": "Robert J. Ringer",
+    "topic": "Business",
+    "status": "Finished",
+    "year": 1973,
+    "rating": 4,
+    "note": ""
+  },
+  {
+    "id": "business-adventures",
+    "title": "Business Adventures",
+    "author": "John Brooks",
+    "topic": "Business",
+    "status": "Reading",
+    "year": 1969,
+    "rating": null,
+    "note": ""
+  },
+  {
+    "id": "huey-long",
+    "title": "Huey Long",
+    "author": "T. Harry Williams",
+    "topic": "Biography",
+    "status": "Reading",
+    "year": 1969,
+    "rating": null,
+    "note": ""
+  },
+  {
+    "id": "the-power-of-now",
+    "title": "The Power of Now",
+    "author": "Eckhart Tolle",
+    "topic": "Philosophy",
+    "status": "Reading",
+    "year": 1997,
+    "rating": null,
+    "note": ""
+  },
+  {
+    "id": "the-prize-the-epic-quest-for-oil-money-and-power",
+    "title": "The Prize: The Epic Quest for Oil, Money, and Power",
+    "author": "Daniel Yergin",
+    "topic": "History",
+    "status": "Reading",
+    "year": 1991,
+    "rating": null,
+    "note": ""
   }
 ]
