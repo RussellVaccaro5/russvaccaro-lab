@@ -5,13 +5,13 @@ import PageIntro from '../../components/PageIntro.astro';
 
 <BaseLayout
   title="Local Scratchpad — Russ Vaccaro Lab"
-  description="A private, auto-saving browser scratchpad with Markdown export."
+  description="Private, auto-saving daily pages with a complete Markdown dump."
 >
   <div class="page-shell scratchpad-page">
     <PageIntro
       eyebrow="Utility · Experiment 02"
-      title="Local scratchpad"
-      description="A low-friction place for rough thinking. It auto-saves to this browser and exports clean Markdown when the note earns a permanent home."
+      title="Daily scratchpad"
+      description="A low-friction daily page for rough thinking. Each date auto-saves to this browser, and every saved page can leave as one clean Markdown dump."
     >
       <div class="local-badge">
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M7 8h10M7 12h6"></path><path d="m15.5 16 1.5 1.5 3-3"></path></svg>
@@ -21,10 +21,21 @@ import PageIntro from '../../components/PageIntro.astro';
 
     <div class="scratchpad-workspace">
       <section class="tool-panel editor-panel" aria-label="Scratchpad editor">
+        <div class="daily-toolbar">
+          <div class="date-navigator" aria-label="Daily page navigation">
+            <button class="date-step" id="previous-day" type="button" aria-label="Open previous day">←</button>
+            <label class="sr-only" for="page-date">Daily page date</label>
+            <input id="page-date" type="date" />
+            <button class="date-step" id="next-day" type="button" aria-label="Open next day">→</button>
+            <button class="today-button" id="open-today" type="button">Today</button>
+          </div>
+          <p class="page-total"><strong id="page-count">0</strong> saved <span id="page-noun">pages</span></p>
+        </div>
+
         <header class="editor-header">
           <div class="title-field">
             <label class="sr-only" for="note-title">Note title</label>
-            <input id="note-title" type="text" value="Untitled scratchpad" autocomplete="off" maxlength="120" />
+            <input id="note-title" type="text" value="Daily page" autocomplete="off" maxlength="120" />
           </div>
           <div class="save-state" id="save-state" role="status" aria-live="polite">
             <span></span>
@@ -58,7 +69,7 @@ import PageIntro from '../../components/PageIntro.astro';
             </button>
             <button class="button-secondary" id="download-note" type="button">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"></path><path d="M5 21h14"></path></svg>
-              Download .md
+              Download daily dump
             </button>
             <button class="button-ghost clear-button" id="open-clear-dialog" type="button">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 10v6M14 10v6"></path></svg>
@@ -89,23 +100,23 @@ import PageIntro from '../../components/PageIntro.astro';
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V7a5 5 0 0 1 10 0v3"></path><rect x="4" y="10" width="16" height="11" rx="2"></rect><path d="M12 14v3"></path></svg>
           <div>
             <strong>Private to this browser</strong>
-            <p>Clearing site data or using another device will not carry this note with you. Do not store secrets or credentials here.</p>
+            <p>Clearing site data or using another device will not carry these pages with you. Do not store secrets or credentials here.</p>
           </div>
         </div>
 
-        <p class="shortcut-note"><kbd>⌘</kbd> / <kbd>Ctrl</kbd> + <kbd>S</kbd> downloads the current note.</p>
+        <p class="shortcut-note"><kbd>⌘</kbd> / <kbd>Ctrl</kbd> + <kbd>S</kbd> downloads the full daily-pages dump.</p>
       </aside>
     </div>
   </div>
 
   <dialog id="clear-dialog" aria-labelledby="clear-dialog-title">
     <div class="dialog-body">
-      <h2 id="clear-dialog-title">Clear this scratchpad?</h2>
-      <p>The saved note in this browser will be erased. Download it first if you may want it later.</p>
+      <h2 id="clear-dialog-title">Clear this daily page?</h2>
+      <p>Only the selected date will be erased. Download the daily-pages dump first if you may want it later.</p>
     </div>
     <div class="dialog-actions">
       <button class="button-secondary" id="cancel-clear" type="button">Keep note</button>
-      <button class="danger-button" id="confirm-clear" type="button">Clear scratchpad</button>
+      <button class="danger-button" id="confirm-clear" type="button">Clear daily page</button>
     </div>
   </dialog>
 
@@ -113,9 +124,16 @@ import PageIntro from '../../components/PageIntro.astro';
 </BaseLayout>
 
 <script>
-  const STORAGE_KEY = 'rv-lab-scratchpad-v1';
+  const STORAGE_KEY = 'rv-lab-daily-pages-v2';
+  const LEGACY_STORAGE_KEY = 'rv-lab-scratchpad-v1';
   const titleInput = document.querySelector<HTMLInputElement>('#note-title')!;
   const editor = document.querySelector<HTMLTextAreaElement>('#scratchpad-editor')!;
+  const dateInput = document.querySelector<HTMLInputElement>('#page-date')!;
+  const previousDayButton = document.querySelector<HTMLButtonElement>('#previous-day')!;
+  const nextDayButton = document.querySelector<HTMLButtonElement>('#next-day')!;
+  const todayButton = document.querySelector<HTMLButtonElement>('#open-today')!;
+  const pageCount = document.querySelector<HTMLElement>('#page-count')!;
+  const pageNoun = document.querySelector<HTMLElement>('#page-noun')!;
   const saveState = document.querySelector<HTMLElement>('#save-state')!;
   const savedTime = document.querySelector<HTMLTimeElement>('#saved-time')!;
   const wordCount = document.querySelector<HTMLElement>('#word-count')!;
@@ -124,10 +142,22 @@ import PageIntro from '../../components/PageIntro.astro';
   const clearDialog = document.querySelector<HTMLDialogElement>('#clear-dialog')!;
   const toastRegion = document.querySelector<HTMLElement>('.toast-region')!;
 
-  type ScratchpadState = {
+  type DailyPage = {
+    date: string;
     title: string;
     body: string;
     savedAt: string;
+  };
+
+  type DailyPagesStore = {
+    version: 2;
+    pages: Record<string, DailyPage>;
+  };
+
+  type LegacyScratchpadState = {
+    title?: string;
+    body?: string;
+    savedAt?: string;
   };
 
   const templates: Record<string, { title: string; body: string }> = {
@@ -145,7 +175,72 @@ import PageIntro from '../../components/PageIntro.astro';
     },
   };
 
+  const dateKey = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const dateFromKey = (key: string) => {
+    const [year, month, day] = key.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  };
+
+  const todayKey = () => dateKey(new Date());
+
+  const formatPageDate = (key: string) => dateFromKey(key).toLocaleDateString([], {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  const persistPages = (pagesToSave: Record<string, DailyPage>) => {
+    const store: DailyPagesStore = { version: 2, pages: pagesToSave };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+  };
+
+  const readPages = (): Record<string, DailyPage> => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored) as Partial<DailyPagesStore>;
+        if (parsed.version === 2 && parsed.pages && typeof parsed.pages === 'object') {
+          return parsed.pages;
+        }
+      }
+
+      const legacyStored = localStorage.getItem(LEGACY_STORAGE_KEY);
+      if (!legacyStored) return {};
+      const legacy = JSON.parse(legacyStored) as LegacyScratchpadState;
+      const legacyTitle = legacy.title?.trim() || '';
+      const body = legacy.body || '';
+      if (!body.trim() && (!legacyTitle || legacyTitle === 'Untitled scratchpad')) return {};
+      const title = legacyTitle && legacyTitle !== 'Untitled scratchpad'
+        ? legacyTitle
+        : 'Imported scratchpad';
+
+      const migratedDate = todayKey();
+      const migratedPages = {
+        [migratedDate]: {
+          date: migratedDate,
+          title,
+          body,
+          savedAt: legacy.savedAt || new Date().toISOString(),
+        },
+      };
+      persistPages(migratedPages);
+      return migratedPages;
+    } catch {
+      return {};
+    }
+  };
+
+  let pages = readPages();
+  let currentDate = todayKey();
   let saveTimeout: number | undefined;
+  let dirty = false;
 
   const showToast = (message: string) => {
     const toast = document.createElement('div');
@@ -155,15 +250,6 @@ import PageIntro from '../../components/PageIntro.astro';
     window.setTimeout(() => toast.remove(), 2200);
   };
 
-  const readState = (): ScratchpadState | null => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  };
-
   const updateCounts = () => {
     const body = editor.value;
     wordCount.textContent = String(body.trim() ? body.trim().split(/\s+/).length : 0);
@@ -171,81 +257,142 @@ import PageIntro from '../../components/PageIntro.astro';
     lineCount.textContent = String(body ? body.split(/\r?\n/).length : 0);
   };
 
-  const setSaveStatus = (status: 'saving' | 'saved' | 'error', date?: Date) => {
+  const setSaveStatus = (status: 'new' | 'saving' | 'saved' | 'error', date?: Date) => {
     saveState.dataset.status = status;
-    saveState.querySelector('strong')!.textContent = status === 'saving'
-      ? 'Saving…'
-      : status === 'error'
-        ? 'Could not save'
-        : 'Saved locally';
+    saveState.querySelector('strong')!.textContent = status === 'new'
+      ? 'New daily page'
+      : status === 'saving'
+        ? 'Saving…'
+        : status === 'error'
+          ? 'Could not save'
+          : 'Saved locally';
     if (status === 'saved' && date) {
       savedTime.dateTime = date.toISOString();
       savedTime.textContent = `· ${date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
     } else if (status === 'error') {
       savedTime.textContent = '· storage unavailable';
+    } else if (status === 'new') {
+      savedTime.textContent = '';
+    } else if (status === 'saved') {
+      savedTime.textContent = '';
     }
   };
 
+  const updatePageCount = () => {
+    const count = Object.keys(pages).length;
+    pageCount.textContent = String(count);
+    pageNoun.textContent = count === 1 ? 'page' : 'pages';
+  };
+
+  const updateDateControls = () => {
+    const today = todayKey();
+    dateInput.max = today;
+    nextDayButton.disabled = currentDate >= today;
+    todayButton.disabled = currentDate === today;
+  };
+
   const save = () => {
+    if (saveTimeout !== undefined) {
+      window.clearTimeout(saveTimeout);
+      saveTimeout = undefined;
+    }
     const now = new Date();
-    const state: ScratchpadState = {
-      title: titleInput.value,
-      body: editor.value,
-      savedAt: now.toISOString(),
-    };
+    const title = titleInput.value.trim();
+    const body = editor.value;
+    const isMeaningful = Boolean(body.trim() || (title && title !== 'Daily page'));
+
+    if (!isMeaningful) {
+      delete pages[currentDate];
+    } else {
+      pages[currentDate] = {
+        date: currentDate,
+        title: title || 'Daily page',
+        body,
+        savedAt: now.toISOString(),
+      };
+    }
+
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      setSaveStatus('saved', now);
+      persistPages(pages);
+      dirty = false;
+      updatePageCount();
+      setSaveStatus(isMeaningful ? 'saved' : 'new', now);
     } catch {
       setSaveStatus('error');
     }
   };
 
+  const loadPage = (key: string) => {
+    if (dirty) save();
+    currentDate = key > todayKey() ? todayKey() : key;
+    const page = pages[currentDate];
+    dateInput.value = currentDate;
+    titleInput.value = page?.title || 'Daily page';
+    editor.value = page?.body || '';
+    dirty = false;
+    updateCounts();
+    updateDateControls();
+
+    if (page?.savedAt) {
+      const savedDate = new Date(page.savedAt);
+      setSaveStatus('saved', Number.isNaN(savedDate.getTime()) ? undefined : savedDate);
+    } else {
+      setSaveStatus('new');
+    }
+  };
+
+  const moveDay = (offset: number) => {
+    const date = dateFromKey(currentDate);
+    date.setDate(date.getDate() + offset);
+    loadPage(dateKey(date));
+  };
+
+  const currentMarkdown = () => {
+    const title = titleInput.value.trim();
+    const body = editor.value;
+    return `## ${formatPageDate(currentDate)}${title && title !== 'Daily page' ? ` — ${title}` : ''}\n\n${body}${body.endsWith('\n') ? '' : '\n'}`;
+  };
+
+  const dailyDump = () => {
+    if (dirty) save();
+    const entries = Object.values(pages).sort((a, b) => a.date.localeCompare(b.date));
+    const generated = new Date().toLocaleString();
+    const sections = entries.map((page) => {
+      const heading = `## ${formatPageDate(page.date)}${page.title && page.title !== 'Daily page' ? ` — ${page.title}` : ''}`;
+      return `${heading}\n\n${page.body.trimEnd()}`;
+    });
+    return `# Daily Pages Dump\n\nGenerated ${generated}\n\n${sections.join('\n\n---\n\n')}\n`;
+  };
+
+  const downloadDump = () => {
+    const blob = new Blob([dailyDump()], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `daily-pages-${todayKey()}.md`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    showToast(`${Object.keys(pages).length} daily ${Object.keys(pages).length === 1 ? 'page' : 'pages'} downloaded`);
+  };
+
   const scheduleSave = () => {
+    dirty = true;
     setSaveStatus('saving');
     if (saveTimeout !== undefined) window.clearTimeout(saveTimeout);
     saveTimeout = window.setTimeout(save, 300);
   };
 
-  const markdown = () => {
-    const title = titleInput.value.trim();
-    const body = editor.value;
-    return `${title ? `# ${title}\n\n` : ''}${body}${body.endsWith('\n') ? '' : '\n'}`;
-  };
+  loadPage(currentDate);
+  updatePageCount();
 
-  const filename = () => {
-    const slug = titleInput.value
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '')
-      .slice(0, 60);
-    return `${slug || 'scratchpad'}.md`;
-  };
-
-  const downloadNote = () => {
-    const blob = new Blob([markdown()], { type: 'text/markdown;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename();
-    document.body.append(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
-    showToast('Markdown downloaded');
-  };
-
-  const restored = readState();
-  if (restored) {
-    titleInput.value = restored.title || 'Untitled scratchpad';
-    editor.value = restored.body || '';
-    const restoredDate = new Date(restored.savedAt);
-    if (!Number.isNaN(restoredDate.getTime())) setSaveStatus('saved', restoredDate);
-  } else {
-    setSaveStatus('saved', new Date());
-  }
-  updateCounts();
+  previousDayButton.addEventListener('click', () => moveDay(-1));
+  nextDayButton.addEventListener('click', () => moveDay(1));
+  todayButton.addEventListener('click', () => loadPage(todayKey()));
+  dateInput.addEventListener('change', () => {
+    if (dateInput.value) loadPage(dateInput.value);
+  });
 
   editor.addEventListener('input', () => {
     updateCounts();
@@ -255,15 +402,15 @@ import PageIntro from '../../components/PageIntro.astro';
 
   document.querySelector('#copy-note')?.addEventListener('click', async () => {
     try {
-      await navigator.clipboard.writeText(markdown());
-      showToast('Note copied as Markdown');
+      await navigator.clipboard.writeText(currentMarkdown());
+      showToast('Daily page copied as Markdown');
     } catch {
       editor.select();
-      showToast('Clipboard blocked; note selected instead');
+      showToast('Clipboard blocked; page selected instead');
     }
   });
 
-  document.querySelector('#download-note')?.addEventListener('click', downloadNote);
+  document.querySelector('#download-note')?.addEventListener('click', downloadDump);
 
   document.querySelectorAll<HTMLButtonElement>('[data-template]').forEach((button) => {
     button.addEventListener('click', () => {
@@ -275,11 +422,12 @@ import PageIntro from '../../components/PageIntro.astro';
       const start = editor.selectionStart;
       const end = editor.selectionEnd;
       editor.setRangeText(insertion, start, end, 'end');
-      if (!editor.value.slice(0, start).trim() && titleInput.value === 'Untitled scratchpad') {
+      if (!editor.value.slice(0, start).trim() && titleInput.value === 'Daily page') {
         titleInput.value = template.title;
       }
       editor.focus();
       updateCounts();
+      dirty = true;
       save();
       showToast(`${template.title} structure inserted`);
     });
@@ -288,14 +436,22 @@ import PageIntro from '../../components/PageIntro.astro';
   document.querySelector('#open-clear-dialog')?.addEventListener('click', () => clearDialog.showModal());
   document.querySelector('#cancel-clear')?.addEventListener('click', () => clearDialog.close());
   document.querySelector('#confirm-clear')?.addEventListener('click', () => {
-    titleInput.value = 'Untitled scratchpad';
-    editor.value = '';
-    localStorage.removeItem(STORAGE_KEY);
-    updateCounts();
-    clearDialog.close();
-    setSaveStatus('saved', new Date());
-    editor.focus();
-    showToast('Scratchpad cleared');
+    delete pages[currentDate];
+    try {
+      persistPages(pages);
+      titleInput.value = 'Daily page';
+      editor.value = '';
+      dirty = false;
+      updateCounts();
+      updatePageCount();
+      clearDialog.close();
+      setSaveStatus('new');
+      editor.focus();
+      showToast(`${formatPageDate(currentDate)} cleared`);
+    } catch {
+      clearDialog.close();
+      setSaveStatus('error');
+    }
   });
 
   clearDialog.addEventListener('click', (event) => {
@@ -305,12 +461,14 @@ import PageIntro from '../../components/PageIntro.astro';
   document.addEventListener('keydown', (event) => {
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 's') {
       event.preventDefault();
-      save();
-      downloadNote();
+      if (dirty) save();
+      downloadDump();
     }
   });
 
-  window.addEventListener('pagehide', save);
+  window.addEventListener('pagehide', () => {
+    if (dirty) save();
+  });
 </script>
 
 <style>
@@ -357,6 +515,66 @@ import PageIntro from '../../components/PageIntro.astro';
     min-height: 43rem;
     overflow: hidden;
   }
+
+  .daily-toolbar {
+    display: flex;
+    min-height: 3.4rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.65rem 1rem;
+    border-bottom: 1px solid var(--line);
+    background: var(--bg-elevated);
+  }
+
+  .date-navigator {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .date-navigator input,
+  .date-step,
+  .today-button {
+    min-height: 2.15rem;
+    border: 1px solid var(--line);
+    border-radius: 0.55rem;
+    color: var(--text);
+    background: var(--surface);
+    font-size: 0.72rem;
+  }
+
+  .date-navigator input { padding: 0.35rem 0.55rem; }
+
+  .date-step {
+    display: grid;
+    width: 2.15rem;
+    padding: 0;
+    place-items: center;
+    font-size: 1rem;
+  }
+
+  .today-button { padding: 0.35rem 0.7rem; font-weight: 700; }
+
+  .date-step:hover,
+  .today-button:hover {
+    border-color: var(--orange);
+    background: color-mix(in srgb, var(--orange-soft) 35%, var(--surface));
+  }
+
+  .date-step:disabled,
+  .today-button:disabled {
+    cursor: default;
+    opacity: 0.42;
+  }
+
+  .page-total {
+    margin: 0;
+    color: var(--faint);
+    font-size: 0.66rem;
+  }
+
+  .page-total strong { color: var(--muted); }
 
   .editor-header {
     display: flex;
@@ -419,6 +637,7 @@ import PageIntro from '../../components/PageIntro.astro';
   }
 
   .save-state[data-status='error'] > span { background: #b44848; }
+  .save-state[data-status='new'] > span { background: var(--faint); }
 
   @keyframes save-pulse { to { opacity: 0.3; } }
 
@@ -615,6 +834,10 @@ import PageIntro from '../../components/PageIntro.astro';
       flex-direction: column;
     }
     .editor-header { gap: 0.5rem; }
+    .daily-toolbar { align-items: stretch; flex-direction: column; }
+    .date-navigator { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; }
+    .date-navigator input { width: 100%; }
+    .page-total { text-align: right; }
     .save-state { align-self: flex-start; }
     .note-counts { justify-content: space-between; }
     .editor-actions { display: grid; grid-template-columns: 1fr 1fr; }

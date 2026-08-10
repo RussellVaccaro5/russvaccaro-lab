@@ -5,7 +5,7 @@ This is the canonical consolidated package for `https://lab.russvaccaro.com`. It
 ## What is included
 
 - Interview Drill: 36 questions, filters, no-repeat shuffling, timers, coaching prompts, copying, and locally stored progress
-- Local Scratchpad: auto-save, quick structures, live counts, copying, confirmed clearing, and Markdown export
+- Daily Scratchpad: date navigation, per-day auto-save, quick structures, live counts, legacy-note migration, and one chronological Markdown dump
 - Learning Cards: 30 cards across five topics with a persistent no-repeat shuffle bag
 - Reading Explorer: searchable JSON-backed catalog with filters and sorting
 - MEDDPICC Scorecard: eight evidence criteria, local auto-save, risk summary, and copyable Markdown review

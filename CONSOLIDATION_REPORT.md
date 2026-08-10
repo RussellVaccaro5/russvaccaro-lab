@@ -129,3 +129,7 @@ These should not be guessed during consolidation:
 - Test the Account POV prompts on public or fictional accounts before adding external data sources.
 - Add real personal essays only when publishable writing exists; the discarded Astro sample posts are not suitable substitutes.
 - Decide whether `lab.russvaccaro.com` should remain a separate lab or become the main `russvaccaro.com` homepage before changing canonical URLs or navigation.
+
+## Post-consolidation update: 0.4.0
+
+The Local Scratchpad was upgraded from one persistent note to a daily-pages system. Each local calendar date now has its own title and body; the original `rv-lab-scratchpad-v1` note migrates into today’s page; and the download action produces a single oldest-to-newest Markdown dump of every saved page. Clearing affects only the selected date.

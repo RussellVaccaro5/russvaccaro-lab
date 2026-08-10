@@ -6,6 +6,19 @@ import StatusBadge from '../../components/StatusBadge.astro';
 const entries = [
   {
     date: 'August 9, 2026',
+    version: '0.4.0',
+    title: 'Scratchpad becomes daily pages',
+    summary: 'Turned the single-note scratchpad into a dated local writing system with a complete portable export.',
+    changes: [
+      'Added previous, next, today, and calendar navigation for daily pages.',
+      'Stored each date independently while keeping all content private to the browser.',
+      'Added automatic migration of the original scratchpad into today’s daily page.',
+      'Changed Markdown download to one chronological dump of every saved daily page.',
+    ],
+    status: 'Shipped' as const,
+  },
+  {
+    date: 'August 9, 2026',
     version: '0.3.0',
     title: 'Four source folders, one canonical lab',
     summary: 'Audited the four overlapping Astro packages and retained the most complete, cohesive implementation as the publishable source.',
