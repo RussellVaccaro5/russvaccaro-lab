@@ -1,0 +1,50 @@
+[
+  {
+    "id": "trigger",
+    "label": "Why now?",
+    "prompt": "What changed inside the account, market, technology stack, or leadership team?",
+    "placeholder": "Example: New data platform initiative, recent breach, cloud migration, executive mandate…"
+  },
+  {
+    "id": "priority",
+    "label": "Business priority",
+    "prompt": "Which executive priority or measurable outcome could this initiative support?",
+    "placeholder": "Example: Reduce release risk while increasing deployment frequency…"
+  },
+  {
+    "id": "current-state",
+    "label": "Current state",
+    "prompt": "How is the account likely handling the problem today, and where does that approach break?",
+    "placeholder": "Example: Point tools, manual triage, inconsistent policy, limited visibility…"
+  },
+  {
+    "id": "impact",
+    "label": "Business impact",
+    "prompt": "What does the current state cost in revenue, risk, time, adoption, or strategic speed?",
+    "placeholder": "Example: Slower releases, excess cloud spend, audit exposure, engineering distraction…"
+  },
+  {
+    "id": "stakeholders",
+    "label": "Likely stakeholders",
+    "prompt": "Who owns the outcome, feels the pain, evaluates the solution, or can block the decision?",
+    "placeholder": "Example: CIO, VP Engineering, CISO, platform team, finance, procurement…"
+  },
+  {
+    "id": "hypothesis",
+    "label": "Value hypothesis",
+    "prompt": "What testable point of view connects the account signal to a better business outcome?",
+    "placeholder": "We believe the account can improve X by changing Y because Z…"
+  },
+  {
+    "id": "proof",
+    "label": "Evidence and questions",
+    "prompt": "What evidence supports the hypothesis, and what must discovery verify or falsify?",
+    "placeholder": "List public evidence, relevant proof points, assumptions, and three discovery questions…"
+  },
+  {
+    "id": "next-step",
+    "label": "Earned next step",
+    "prompt": "What small, mutual action would test interest and improve the quality of the hypothesis?",
+    "placeholder": "Example: 30-minute architecture review with the platform owner and security lead…"
+  }
+]

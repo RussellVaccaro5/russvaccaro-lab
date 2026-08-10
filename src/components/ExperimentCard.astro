@@ -1,72 +1,187 @@
 ---
-import StatusBadge, { type Status } from './StatusBadge.astro';
+import StatusBadge from './StatusBadge.astro';
 
 interface Props {
+  href: string;
+  number: string;
   title: string;
   description: string;
-  href: string;
-  status: Status;
+  category: string;
+  status: 'Shipped' | 'Prototype' | 'Building';
   technologies: string[];
+  learning: string;
+  next: string;
+  accent?: 'green' | 'orange' | 'blue';
 }
 
-const { title, description, href, status, technologies } = Astro.props;
+const {
+  href,
+  number,
+  title,
+  description,
+  category,
+  status,
+  technologies,
+  learning,
+  next,
+  accent = 'green',
+} = Astro.props;
 ---
 
-<article class="experiment-card">
-  <div class="experiment-card__topline">
-    <StatusBadge status={status} />
-    <span aria-hidden="true">↗</span>
-  </div>
-  <h2><a href={href}>{title}</a></h2>
-  <p>{description}</p>
-  <ul class="pill-list" aria-label="Technologies used">
-    {technologies.map((technology) => <li class="pill">{technology}</li>)}
-  </ul>
+<article class={`experiment-card experiment-${accent}`}>
+  <a href={href} aria-label={`Open ${title}`}>
+    <div class="experiment-topline">
+      <span class="experiment-number">{number}</span>
+      <StatusBadge status={status} />
+    </div>
+    <div class="experiment-copy">
+      <p class="experiment-category">{category}</p>
+      <h3>{title}</h3>
+      <p>{description}</p>
+    </div>
+    <ul aria-label="Technologies used">
+      {technologies.map((technology) => <li>{technology}</li>)}
+    </ul>
+    <dl>
+      <div><dt>Learning</dt><dd>{learning}</dd></div>
+      <div><dt>Next</dt><dd>{next}</dd></div>
+    </dl>
+    <span class="open-label">Open experiment <span aria-hidden="true">↗</span></span>
+  </a>
 </article>
 
 <style>
   .experiment-card {
-    display: flex;
-    min-height: 250px;
-    padding: 24px;
-    flex-direction: column;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
+    --experiment-accent: var(--green);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
     background: var(--surface);
-    box-shadow: var(--shadow);
-    transition:
-      transform 160ms ease,
-      border-color 160ms ease;
+    box-shadow: var(--shadow-sm);
+    transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
   }
+
+  .experiment-card::before {
+    position: absolute;
+    inset: 0 0 auto;
+    height: 0.26rem;
+    background: var(--experiment-accent);
+    content: '';
+  }
+
+  .experiment-orange { --experiment-accent: var(--orange); }
+  .experiment-blue { --experiment-accent: var(--blue); }
 
   .experiment-card:hover {
-    transform: translateY(-3px);
-    border-color: var(--accent);
+    border-color: color-mix(in srgb, var(--experiment-accent) 48%, var(--line));
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
   }
 
-  .experiment-card__topline {
+  .experiment-card > a {
     display: flex;
-    margin-bottom: 32px;
-    align-items: center;
-    justify-content: space-between;
-    color: var(--muted);
-  }
-
-  h2 {
-    margin-bottom: 10px;
-    font-size: 1.35rem;
-  }
-
-  h2 a {
-    color: var(--text);
+    min-height: 32rem;
+    flex-direction: column;
+    padding: 1.35rem;
     text-decoration: none;
   }
 
-  p {
-    color: var(--muted);
+  .experiment-topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
   }
 
-  .pill-list {
-    margin-top: auto;
+  .experiment-number {
+    color: var(--faint);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.7rem;
+  }
+
+  .experiment-copy {
+    padding-block: 3rem 1.2rem;
+  }
+
+  .experiment-category {
+    margin: 0;
+    color: var(--experiment-accent);
+    font-size: 0.67rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  h3 {
+    margin: 0.45rem 0 0.75rem;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(2rem, 3vw, 2.65rem);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  .experiment-copy > p:last-child {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.87rem;
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.38rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    padding: 0.26rem 0.48rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: 0.62rem;
+    font-weight: 680;
+  }
+
+  dl {
+    display: grid;
+    gap: 0.75rem;
+    margin: auto 0 1.1rem;
+    padding-top: 2rem;
+  }
+
+  dl > div {
+    display: grid;
+    grid-template-columns: 4rem minmax(0, 1fr);
+    gap: 0.65rem;
+    padding-top: 0.65rem;
+    border-top: 1px solid var(--line);
+  }
+
+  dt {
+    color: var(--faint);
+    font-size: 0.62rem;
+    font-weight: 760;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  dd {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.72rem;
+    line-height: 1.45;
+  }
+
+  .open-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--text);
+    font-size: 0.7rem;
+    font-weight: 720;
   }
 </style>

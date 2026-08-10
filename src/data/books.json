@@ -1,29 +1,122 @@
 [
   {
-    "title": "Example: a sales or GTM book",
-    "author": "Replace with the author",
-    "category": "Sales & GTM",
+    "id": "gap-selling",
+    "title": "Gap Selling",
+    "author": "Keenan",
+    "topic": "Sales",
     "status": "Finished",
+    "year": 2018,
+    "rating": 5,
+    "note": "Diagnose the gap between a buyer's current and future state instead of leading with product capabilities."
+  },
+  {
+    "id": "challenger-sale",
+    "title": "The Challenger Sale",
+    "author": "Matthew Dixon and Brent Adamson",
+    "topic": "Sales",
+    "status": "Finished",
+    "year": 2011,
     "rating": 4,
-    "takeaway": "Replace this with the one idea you expect to use again.",
-    "noteUrl": ""
+    "note": "Commercial insight works when it reframes how the customer understands a costly problem."
   },
   {
-    "title": "Example: a cloud or data book",
-    "author": "Replace with the author",
-    "category": "Technical",
-    "status": "Currently reading",
+    "id": "meddicc",
+    "title": "MEDDICC",
+    "author": "Andy Whyte",
+    "topic": "Sales",
+    "status": "Reading",
+    "year": 2020,
     "rating": null,
-    "takeaway": "Capture a precise concept, mechanism, or useful mental model.",
-    "noteUrl": ""
+    "note": "Treat qualification fields as evidence standards, not boxes to mark complete."
   },
   {
-    "title": "Example: a strategy book",
-    "author": "Replace with the author",
-    "category": "Strategy",
-    "status": "Want to read",
+    "id": "founding-sales",
+    "title": "Founding Sales",
+    "author": "Pete Kazanjy",
+    "topic": "GTM",
+    "status": "Queue",
+    "year": 2020,
     "rating": null,
-    "takeaway": "Add why this earned a place in the queue.",
-    "noteUrl": ""
+    "note": "A practical operating manual for moving from founder-led selling toward a repeatable motion."
+  },
+  {
+    "id": "good-strategy-bad-strategy",
+    "title": "Good Strategy/Bad Strategy",
+    "author": "Richard Rumelt",
+    "topic": "Strategy",
+    "status": "Finished",
+    "year": 2011,
+    "rating": 5,
+    "note": "Useful strategy combines a diagnosis, a guiding policy, and coherent action."
+  },
+  {
+    "id": "mom-test",
+    "title": "The Mom Test",
+    "author": "Rob Fitzpatrick",
+    "topic": "Discovery",
+    "status": "Finished",
+    "year": 2013,
+    "rating": 4,
+    "note": "Ask about specific past behavior and present constraints instead of collecting compliments."
+  },
+  {
+    "id": "accelerate",
+    "title": "Accelerate",
+    "author": "Nicole Forsgren, Jez Humble, and Gene Kim",
+    "topic": "DevOps",
+    "status": "Reading",
+    "year": 2018,
+    "rating": null,
+    "note": "Connect software delivery practices to measurable organizational performance."
+  },
+  {
+    "id": "ddia",
+    "title": "Designing Data-Intensive Applications",
+    "author": "Martin Kleppmann",
+    "topic": "Data",
+    "status": "Queue",
+    "year": 2017,
+    "rating": null,
+    "note": "A durable map of storage, distributed systems, consistency, and data-processing tradeoffs."
+  },
+  {
+    "id": "zero-trust-networks",
+    "title": "Zero Trust Networks",
+    "author": "Evan Gilman and Doug Barth",
+    "topic": "Security",
+    "status": "Queue",
+    "year": 2017,
+    "rating": null,
+    "note": "Frame zero trust as an architectural system of identity, policy, and continuous verification."
+  },
+  {
+    "id": "thinking-in-systems",
+    "title": "Thinking in Systems",
+    "author": "Donella H. Meadows",
+    "topic": "Thinking",
+    "status": "Finished",
+    "year": 2008,
+    "rating": 5,
+    "note": "Look for stocks, flows, delays, feedback loops, and leverage points behind visible events."
+  },
+  {
+    "id": "working-backwards",
+    "title": "Working Backwards",
+    "author": "Colin Bryar and Bill Carr",
+    "topic": "Product",
+    "status": "Queue",
+    "year": 2021,
+    "rating": null,
+    "note": "Mechanisms turn operating principles into repeatable decisions and customer-centered execution."
+  },
+  {
+    "id": "clear-thinking",
+    "title": "Clear Thinking",
+    "author": "Shane Parrish",
+    "topic": "Thinking",
+    "status": "Reading",
+    "year": 2023,
+    "rating": null,
+    "note": "Create space between stimulus and response so defaults do not make important decisions for you."
   }
 ]

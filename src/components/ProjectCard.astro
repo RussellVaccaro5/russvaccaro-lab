@@ -1,0 +1,30 @@
+---
+interface Props {
+  href: string;
+  number: string;
+  title: string;
+  description: string;
+  category: string;
+  accent: 'green' | 'orange' | 'blue';
+  features: string[];
+}
+
+const { href, number, title, description, category, accent, features } = Astro.props;
+---
+
+<article class={`project-card accent-${accent}`}>
+  <a href={href} aria-label={`Open ${title}`}>
+    <div class="project-card-top">
+      <span class="project-number">{number}</span>
+      <span class="project-arrow" aria-hidden="true">↗</span>
+    </div>
+    <div class="project-card-copy">
+      <p class="project-category">{category}</p>
+      <h2>{title}</h2>
+      <p>{description}</p>
+    </div>
+    <ul aria-label="Features">
+      {features.map((feature) => <li>{feature}</li>)}
+    </ul>
+  </a>
+</article>

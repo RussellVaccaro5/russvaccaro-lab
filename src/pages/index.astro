@@ -1,93 +1,165 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
 import ExperimentCard from '../components/ExperimentCard.astro';
-import LabLayout from '../layouts/LabLayout.astro';
-import { experiments } from '../data/experiments';
+
+const experiments = [
+  {
+    href: '/sales/interview/',
+    number: '01',
+    title: 'Interview drill',
+    description: 'A no-repeat question deck for practicing concise, evidence-rich sales interview answers.',
+    category: 'Sales practice',
+    status: 'Shipped' as const,
+    technologies: ['Astro', 'TypeScript', 'localStorage'],
+    learning: 'A shuffle bag creates better practice variety than a fresh random draw.',
+    next: 'Add custom question import and session-level review notes.',
+    accent: 'green' as const,
+  },
+  {
+    href: '/tools/scratchpad/',
+    number: '02',
+    title: 'Local scratchpad',
+    description: 'A quiet, auto-saving page for rough notes that should stay inside your browser.',
+    category: 'Utility',
+    status: 'Shipped' as const,
+    technologies: ['Astro', 'Browser storage', 'Blob API'],
+    learning: 'A useful single-page tool can be private, persistent, and account-free.',
+    next: 'Add named local notes without introducing a backend.',
+    accent: 'orange' as const,
+  },
+  {
+    href: '/learning/',
+    number: '03',
+    title: 'Learning cards',
+    description: 'A rotating set of ideas worth keeping, shuffled so familiar cards cannot always lead.',
+    category: 'Learning system',
+    status: 'Shipped' as const,
+    technologies: ['Astro', 'TypeScript', 'Shuffle bag'],
+    learning: 'Persistent randomization makes repeat visits feel varied without losing deck coverage.',
+    next: 'Generate cards from selected Markdown notes.',
+    accent: 'blue' as const,
+  },
+  {
+    href: '/reading/',
+    number: '04',
+    title: 'Reading explorer',
+    description: 'A searchable reading log that turns a small JSON file into an explorable knowledge shelf.',
+    category: 'Data-driven page',
+    status: 'Prototype' as const,
+    technologies: ['Astro', 'JSON', 'Client filters'],
+    learning: 'Structured source data can support several views without adding a database.',
+    next: 'Replace starter entries with the real reading catalog and notes.',
+    accent: 'orange' as const,
+  },
+  {
+    href: '/sales/meddpicc/',
+    number: '05',
+    title: 'MEDDPICC scorecard',
+    description: 'An evidence-first deal review that exposes qualification gaps and creates a copyable summary.',
+    category: 'Sales operating tool',
+    status: 'Prototype' as const,
+    technologies: ['Astro', 'TypeScript', 'localStorage'],
+    learning: 'Scoring becomes useful when every selection must be supported by evidence.',
+    next: 'Add named local deals and compare score changes over time.',
+    accent: 'green' as const,
+  },
+  {
+    href: '/sales/pov-builder/',
+    number: '06',
+    title: 'Account POV builder',
+    description: 'A structured workspace for turning account signals into a testable value hypothesis.',
+    category: 'Sales research tool',
+    status: 'Prototype' as const,
+    technologies: ['Astro', 'JSON schema', 'Markdown export'],
+    learning: 'A point of view is strongest when evidence, assumptions, and discovery questions stay distinct.',
+    next: 'Add optional public-signal imports once the manual workflow is proven.',
+    accent: 'blue' as const,
+  },
+];
 ---
 
-<LabLayout
-  title="Lab"
-  description="Small experiments in technical GTM, infrastructure, and personal knowledge tools."
+<BaseLayout
+  title="Russ Vaccaro Lab — Small browser experiments"
+  description="Small browser experiments for sales practice, technical learning, and clearer thinking."
 >
-  <section class="hero">
-    <p class="eyebrow">Russ Vaccaro / Playground</p>
-    <h1>Useful tools.<br />Visible learning.</h1>
-    <p class="lede">
-      A working lab for sales systems, technical concepts, and lightweight software experiments.
-      Each project starts small, ships publicly, and improves when it earns another iteration.
-    </p>
-    <div class="button-row">
-      <a class="button" href="#experiments">Explore experiments</a>
-      <a class="button secondary" href="/changelog/">See what changed</a>
+  <section class="hero shell">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow">Personal software, in public</p>
+        <h1>Tools for <em>sharper</em> work.</h1>
+      </div>
+      <div class="hero-side">
+        <p>
+          A working notebook for small ideas: useful enough to keep, contained enough to ship quickly.
+        </p>
+        <div class="hero-meta" aria-label="Project principles">
+          <span>Static Astro</span>
+          <span>Browser first</span>
+          <span>No accounts</span>
+        </div>
+        <a class="main-home-link" href="https://russvaccaro.com">Visit russvaccaro.com <span aria-hidden="true">↗</span></a>
+      </div>
     </div>
   </section>
 
-  <section id="experiments" class="section">
+  <section class="projects-section shell" aria-labelledby="projects-title">
     <div class="section-heading">
       <div>
-        <p class="eyebrow">Current work</p>
-        <h2>Experiments</h2>
+        <p class="kicker">Current experiments</p>
+        <h2 id="projects-title">Six useful, inspectable loops.</h2>
       </div>
-      <p>{experiments.length} small builds</p>
+      <p>Each card records what the experiment does, what it taught, and the next meaningful improvement.</p>
     </div>
-    <div class="card-grid">
-      {
-        experiments.map((experiment) => (
-          <ExperimentCard
-            title={experiment.title}
-            description={experiment.description}
-            href={experiment.href}
-            status={experiment.status}
-            technologies={experiment.technologies}
-          />
-        ))
-      }
+
+    <div class="experiment-grid">
+      {experiments.map((experiment) => <ExperimentCard {...experiment} />)}
     </div>
   </section>
 
-  <section class="section principles">
-    <div class="section-heading">
-      <div>
-        <p class="eyebrow">Build rule</p>
-        <h2>Start with the smallest useful version</h2>
-      </div>
+  <section class="principles shell" aria-labelledby="principles-title">
+    <div class="principles-copy">
+      <p class="kicker">Build sequence</p>
+      <h2 id="principles-title">Complexity has to earn its place.</h2>
+      <p>The lab progresses from static pages to structured data, interaction, persistence, and APIs only when the experiment needs the next layer.</p>
     </div>
-    <ol>
-      <li><strong>Static:</strong> prove the content and layout.</li>
-      <li><strong>Data-driven:</strong> move repeated content into JSON or TypeScript.</li>
-      <li><strong>Interactive:</strong> add forms, filters, and browser state.</li>
-      <li><strong>Connected:</strong> add APIs or a database only when the workflow warrants it.</li>
+    <ol class="principles-list">
+      <li>
+        <span>01</span>
+        <div><h3>Static and legible</h3><p>Make the purpose, content, and information architecture work before adding state.</p></div>
+      </li>
+      <li>
+        <span>02</span>
+        <div><h3>Data-driven and interactive</h3><p>Move repeated content into structured files, then add only the interactions that improve its use.</p></div>
+      </li>
+      <li>
+        <span>03</span>
+        <div><h3>Persistent when proven</h3><p>Start with device-local state. Add accounts or external APIs only after the workflow earns them.</p></div>
+      </li>
     </ol>
   </section>
-</LabLayout>
+</BaseLayout>
 
 <style>
-  .hero {
-    padding: 38px 0 44px;
-  }
-
-  .hero .button-row {
-    margin-top: 28px;
-  }
-
-  .principles {
+  .experiment-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
-    gap: 48px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
   }
 
-  .principles ol {
-    margin: 0;
-    padding-left: 24px;
+  .main-home-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 1.25rem;
+    color: var(--text);
+    font-size: 0.78rem;
+    font-weight: 720;
+    text-decoration: none;
   }
 
-  .principles li {
-    margin-bottom: 12px;
-  }
+  .main-home-link:hover { color: var(--green); }
 
-  @media (max-width: 720px) {
-    .principles {
-      grid-template-columns: 1fr;
-      gap: 16px;
-    }
+  @media (max-width: 760px) {
+    .experiment-grid { grid-template-columns: 1fr; }
   }
 </style>

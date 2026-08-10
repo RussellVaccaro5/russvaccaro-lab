@@ -1,33 +1,131 @@
 ---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageIntro from '../../components/PageIntro.astro';
 import ExperimentCard from '../../components/ExperimentCard.astro';
-import PageHeader from '../../components/PageHeader.astro';
-import LabLayout from '../../layouts/LabLayout.astro';
+
+const salesTools = [
+  {
+    href: '/sales/interview/',
+    number: '01',
+    title: 'Interview drill',
+    description: 'Practice one sales interview question at a time with filters, timers, follow-up pressure tests, and locally stored progress.',
+    category: 'Practice',
+    status: 'Shipped' as const,
+    technologies: ['Shuffle bag', 'Timers', 'localStorage'],
+    learning: 'Better prompts test decisions and evidence, not memorized frameworks.',
+    next: 'Import custom prompts for a specific interview process.',
+    accent: 'green' as const,
+  },
+  {
+    href: '/sales/meddpicc/',
+    number: '05',
+    title: 'MEDDPICC scorecard',
+    description: 'Review eight qualification dimensions, record the evidence, and create a concise deal-risk summary.',
+    category: 'Deal inspection',
+    status: 'Prototype' as const,
+    technologies: ['Interactive form', 'Auto-save', 'Clipboard'],
+    learning: 'A score is useful only when its evidence and next action remain visible.',
+    next: 'Support several named deals stored locally.',
+    accent: 'orange' as const,
+  },
+  {
+    href: '/sales/pov-builder/',
+    number: '06',
+    title: 'Account POV builder',
+    description: 'Organize account signals, likely impact, stakeholders, evidence, and discovery questions into a testable point of view.',
+    category: 'Account research',
+    status: 'Prototype' as const,
+    technologies: ['JSON prompts', 'Auto-save', 'Markdown export'],
+    learning: 'Useful personalization starts with a falsifiable commercial hypothesis.',
+    next: 'Add optional signal collection from public sources.',
+    accent: 'blue' as const,
+  },
+];
 ---
 
-<LabLayout
-  title="Sales Tools"
-  description="Browser-only tools for deal qualification and target-account thinking."
+<BaseLayout
+  title="Sales Tools — Russ Vaccaro Lab"
+  description="Browser-based tools for sales interview practice, deal inspection, and account research."
 >
-  <PageHeader
-    eyebrow="Sales systems"
-    title="Tools that sharpen judgment"
-    description="These prototypes structure thinking. They do not replace discovery, customer evidence, or deal coaching. Keep confidential account data out of public demos."
-  />
+  <div class="page-shell sales-hub">
+    <PageIntro
+      eyebrow="Sales workbench"
+      title="Practice the judgment behind the process."
+      description="Three narrow tools for preparing better answers, inspecting deal evidence, and turning account research into a point of view."
+    />
 
-  <div class="card-grid">
-    <ExperimentCard
-      title="MEDDPICC Deal Diagnostic"
-      description="Score the strength of evidence, expose gaps, and identify the next qualification question."
-      href="/sales/meddpicc/"
-      status="Prototype"
-      technologies={['Forms', 'Scoring', 'localStorage']}
-    />
-    <ExperimentCard
-      title="Target Account POV Builder"
-      description="Turn research signals into a concise problem, impact, relevance, and discovery hypothesis."
-      href="/sales/pov-builder/"
-      status="Prototype"
-      technologies={['Forms', 'Templates', 'Clipboard API']}
-    />
+    <section class="sales-tool-grid" aria-label="Sales experiments">
+      {salesTools.map((tool) => <ExperimentCard {...tool} />)}
+    </section>
+
+    <section class="sales-loop" aria-labelledby="sales-loop-title">
+      <div>
+        <p class="kicker">The operating loop</p>
+        <h2 id="sales-loop-title">Prepare, test, update.</h2>
+      </div>
+      <ol>
+        <li><span>01</span><div><h3>Build the hypothesis</h3><p>Start with an account, deal, or interview prompt and name what you currently believe.</p></div></li>
+        <li><span>02</span><div><h3>Expose weak evidence</h3><p>Use follow-ups and qualification criteria to find the words you cannot yet defend.</p></div></li>
+        <li><span>03</span><div><h3>Choose the next test</h3><p>Convert the gap into a question, stakeholder action, or research step that can update the model.</p></div></li>
+      </ol>
+    </section>
   </div>
-</LabLayout>
+</BaseLayout>
+
+<style>
+  .sales-tool-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .sales-loop {
+    display: grid;
+    grid-template-columns: 0.7fr 1.3fr;
+    gap: clamp(2rem, 8vw, 7rem);
+    margin-top: clamp(5rem, 10vw, 9rem);
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .sales-loop h2 {
+    margin: 0.4rem 0 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 500;
+    letter-spacing: -0.045em;
+    line-height: 1;
+  }
+
+  .sales-loop ol {
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--line);
+    list-style: none;
+  }
+
+  .sales-loop li {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: 1rem;
+    padding: 1.2rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .sales-loop li > span {
+    color: var(--green);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.7rem;
+  }
+
+  .sales-loop h3 { margin: 0 0 0.2rem; font-size: 0.92rem; }
+  .sales-loop li p { margin: 0; color: var(--muted); font-size: 0.82rem; }
+
+  @media (max-width: 920px) {
+    .sales-tool-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 680px) {
+    .sales-loop { grid-template-columns: 1fr; }
+  }
+</style>

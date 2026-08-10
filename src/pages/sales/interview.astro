@@ -1,0 +1,772 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageIntro from '../../components/PageIntro.astro';
+import { interviewCategories, interviewDifficulties, interviewQuestions } from '../../data/interview-questions';
+---
+
+<BaseLayout
+  title="Sales Interview Drill — Russ Vaccaro Lab"
+  description="Practice sales interview questions from a shuffled, no-repeat browser deck."
+>
+  <div class="page-shell interview-page">
+    <PageIntro
+      eyebrow="Sales practice · Experiment 01"
+      title="Interview drill"
+      description="Practice one answer at a time. Filter the deck, start a short timer, then reveal the follow-up pressure test."
+    >
+      <div class="deck-summary" aria-label="Question deck summary">
+        <strong>{interviewQuestions.length}</strong>
+        <span>questions<br />in the deck</span>
+      </div>
+    </PageIntro>
+
+    <div class="interview-workspace">
+      <aside class="tool-panel drill-controls" aria-label="Interview drill settings">
+        <div class="control-heading">
+          <div>
+            <p class="field-label">Session setup</p>
+            <h2>Shape the drill</h2>
+          </div>
+          <button class="reset-link" id="reset-session" type="button">Reset</button>
+        </div>
+
+        <div class="field-group">
+          <label for="category-filter">Category</label>
+          <select id="category-filter">
+            <option value="all">All categories</option>
+            {interviewCategories.map((category) => <option value={category}>{category}</option>)}
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label for="difficulty-filter">Difficulty</label>
+          <select id="difficulty-filter">
+            <option value="all">All levels</option>
+            {interviewDifficulties.map((difficulty) => <option value={difficulty}>{difficulty}</option>)}
+          </select>
+        </div>
+
+        <fieldset class="timer-fieldset">
+          <legend class="field-label">Answer timer</legend>
+          <div class="segmented-control">
+            <label><input type="radio" name="timer-length" value="0" checked /><span>Off</span></label>
+            <label><input type="radio" name="timer-length" value="60" /><span>60s</span></label>
+            <label><input type="radio" name="timer-length" value="120" /><span>120s</span></label>
+          </div>
+        </fieldset>
+
+        <div class="progress-card">
+          <div class="progress-copy">
+            <span>Practiced</span>
+            <strong id="practiced-count">0</strong>
+          </div>
+          <div class="progress-track" aria-hidden="true"><span id="practiced-progress"></span></div>
+          <p id="pool-detail">Loading question deck…</p>
+        </div>
+
+        <div class="privacy-note">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path><path d="m9 12 2 2 4-4"></path></svg>
+          <span>Your practiced list stays in this browser. No sign-in or server storage.</span>
+        </div>
+      </aside>
+
+      <section class="tool-panel question-stage" aria-labelledby="question-text">
+        <div class="question-stage-top">
+          <div class="question-tags">
+            <span id="question-category">Category</span>
+            <span id="question-difficulty">Level</span>
+          </div>
+          <button class="bookmark-button" id="practiced-button" type="button" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 12 2 2 4-4"></path><circle cx="12" cy="12" r="9"></circle></svg>
+            <span>Mark practiced</span>
+          </button>
+        </div>
+
+        <div class="question-main">
+          <p class="question-label">Your question</p>
+          <h2 id="question-text">Loading your first question…</h2>
+        </div>
+
+        <div class="timer-module" id="timer-module" hidden>
+          <div class="timer-readout" aria-live="polite">
+            <span id="timer-display">1:00</span>
+            <small id="timer-status">Ready</small>
+          </div>
+          <div class="timer-actions">
+            <button type="button" id="timer-toggle">Pause</button>
+            <button type="button" id="timer-reset">Restart</button>
+          </div>
+        </div>
+
+        <div class="coaching-panel" id="coaching-panel" hidden>
+          <div>
+            <p class="coaching-label">Pressure test</p>
+            <ul id="follow-up-list"></ul>
+          </div>
+          <div class="listen-for">
+            <p class="coaching-label">A strong answer shows</p>
+            <p id="listen-for-text"></p>
+          </div>
+        </div>
+
+        <div class="question-footer">
+          <div class="question-actions-secondary">
+            <button class="button-secondary" id="reveal-button" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path><circle cx="12" cy="12" r="2.5"></circle></svg>
+              <span>Reveal coaching</span>
+            </button>
+            <button class="button-ghost" id="copy-question" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg>
+              <span>Copy</span>
+            </button>
+          </div>
+          <button class="button next-button" id="next-question" type="button">
+            <span>Next question</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+          </button>
+        </div>
+        <p class="question-position" id="question-position" aria-live="polite"></p>
+      </section>
+    </div>
+  </div>
+
+  <div class="toast-region" aria-live="polite" aria-atomic="true"></div>
+</BaseLayout>
+
+<script>
+  import { interviewQuestions } from '../../data/interview-questions';
+  import { makeShuffleBag } from '../../utils/shuffle';
+
+  const SETTINGS_KEY = 'rv-lab-interview-settings-v1';
+  const QUEUE_KEY = 'rv-lab-interview-queues-v1';
+
+  type Settings = {
+    category: string;
+    difficulty: string;
+    timer: number;
+    practiced: string[];
+  };
+
+  type QueueState = {
+    queues: Record<string, string[]>;
+    lastQuestionId?: string;
+  };
+
+  const categoryFilter = document.querySelector<HTMLSelectElement>('#category-filter')!;
+  const difficultyFilter = document.querySelector<HTMLSelectElement>('#difficulty-filter')!;
+  const timerInputs = [...document.querySelectorAll<HTMLInputElement>('input[name="timer-length"]')];
+  const questionText = document.querySelector<HTMLElement>('#question-text')!;
+  const questionCategory = document.querySelector<HTMLElement>('#question-category')!;
+  const questionDifficulty = document.querySelector<HTMLElement>('#question-difficulty')!;
+  const followUpList = document.querySelector<HTMLUListElement>('#follow-up-list')!;
+  const listenForText = document.querySelector<HTMLElement>('#listen-for-text')!;
+  const coachingPanel = document.querySelector<HTMLElement>('#coaching-panel')!;
+  const revealButton = document.querySelector<HTMLButtonElement>('#reveal-button')!;
+  const practicedButton = document.querySelector<HTMLButtonElement>('#practiced-button')!;
+  const practicedCount = document.querySelector<HTMLElement>('#practiced-count')!;
+  const practicedProgress = document.querySelector<HTMLElement>('#practiced-progress')!;
+  const poolDetail = document.querySelector<HTMLElement>('#pool-detail')!;
+  const positionText = document.querySelector<HTMLElement>('#question-position')!;
+  const timerModule = document.querySelector<HTMLElement>('#timer-module')!;
+  const timerDisplay = document.querySelector<HTMLElement>('#timer-display')!;
+  const timerStatus = document.querySelector<HTMLElement>('#timer-status')!;
+  const timerToggle = document.querySelector<HTMLButtonElement>('#timer-toggle')!;
+  const toastRegion = document.querySelector<HTMLElement>('.toast-region')!;
+
+  const defaultSettings: Settings = {
+    category: 'all',
+    difficulty: 'all',
+    timer: 0,
+    practiced: [],
+  };
+
+  const readJSON = <T,>(key: string, fallback: T): T => {
+    try {
+      const stored = localStorage.getItem(key) ?? sessionStorage.getItem(key);
+      return stored ? { ...fallback, ...JSON.parse(stored) } : fallback;
+    } catch {
+      return fallback;
+    }
+  };
+
+  let settings = readJSON<Settings>(SETTINGS_KEY, defaultSettings);
+  let queueState = readJSON<QueueState>(QUEUE_KEY, { queues: {} });
+  let currentQuestion = interviewQuestions[0];
+  let timerRemaining = settings.timer;
+  let timerInterval: number | undefined;
+  let timerIsRunning = false;
+
+  const saveSettings = () => localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  const saveQueues = () => sessionStorage.setItem(QUEUE_KEY, JSON.stringify(queueState));
+
+  const showToast = (message: string) => {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    toastRegion.append(toast);
+    window.setTimeout(() => toast.remove(), 2200);
+  };
+
+  const getPool = () => interviewQuestions.filter((question) =>
+    (settings.category === 'all' || question.category === settings.category) &&
+    (settings.difficulty === 'all' || question.difficulty === settings.difficulty)
+  );
+
+  const getQueueKey = () => `${settings.category}::${settings.difficulty}`;
+
+  const updatePracticeUI = () => {
+    const practiced = settings.practiced.includes(currentQuestion.id);
+    practicedButton.setAttribute('aria-pressed', String(practiced));
+    practicedButton.querySelector('span')!.textContent = practiced ? 'Practiced' : 'Mark practiced';
+    practicedCount.textContent = String(settings.practiced.length);
+    practicedProgress.style.width = `${(settings.practiced.length / interviewQuestions.length) * 100}%`;
+  };
+
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainder = seconds % 60;
+    return `${minutes}:${String(remainder).padStart(2, '0')}`;
+  };
+
+  const stopTimer = () => {
+    if (timerInterval !== undefined) window.clearInterval(timerInterval);
+    timerInterval = undefined;
+    timerIsRunning = false;
+  };
+
+  const updateTimerUI = () => {
+    timerDisplay.textContent = formatTime(timerRemaining);
+    timerToggle.textContent = timerIsRunning ? 'Pause' : timerRemaining === 0 ? 'Start over' : 'Resume';
+    timerStatus.textContent = timerRemaining === 0 ? 'Time' : timerIsRunning ? 'Answering' : 'Paused';
+    timerModule.classList.toggle('timer-expired', timerRemaining === 0);
+  };
+
+  const startTimer = () => {
+    if (!settings.timer) return;
+    stopTimer();
+    if (timerRemaining === 0) timerRemaining = settings.timer;
+    timerIsRunning = true;
+    updateTimerUI();
+    timerInterval = window.setInterval(() => {
+      timerRemaining -= 1;
+      if (timerRemaining <= 0) {
+        timerRemaining = 0;
+        stopTimer();
+        showToast('Time. Finish the thought, then review your answer.');
+      }
+      updateTimerUI();
+    }, 1000);
+  };
+
+  const resetTimer = (autoStart = true) => {
+    stopTimer();
+    timerRemaining = settings.timer;
+    timerModule.hidden = settings.timer === 0;
+    updateTimerUI();
+    if (settings.timer && autoStart) startTimer();
+  };
+
+  const hideCoaching = () => {
+    coachingPanel.hidden = true;
+    revealButton.setAttribute('aria-expanded', 'false');
+    revealButton.querySelector('span')!.textContent = 'Reveal coaching';
+  };
+
+  const renderQuestion = () => {
+    questionText.textContent = currentQuestion.prompt;
+    questionCategory.textContent = currentQuestion.category;
+    questionDifficulty.textContent = currentQuestion.difficulty;
+    followUpList.replaceChildren(...currentQuestion.followUps.map((prompt) => {
+      const item = document.createElement('li');
+      item.textContent = prompt;
+      return item;
+    }));
+    listenForText.textContent = currentQuestion.listenFor;
+    hideCoaching();
+    updatePracticeUI();
+    resetTimer(true);
+  };
+
+  const drawQuestion = () => {
+    const pool = getPool();
+    const queueKey = getQueueKey();
+    const validIds = new Set(pool.map((question) => question.id));
+    let queue = (queueState.queues[queueKey] ?? []).filter((id) => validIds.has(id));
+
+    if (queue.length === 0) {
+      queue = makeShuffleBag(pool.map((question) => question.id), queueState.lastQuestionId);
+    }
+
+    const nextId = queue.shift()!;
+    queueState.queues[queueKey] = queue;
+    queueState.lastQuestionId = nextId;
+    saveQueues();
+
+    currentQuestion = pool.find((question) => question.id === nextId) ?? pool[0];
+    renderQuestion();
+
+    const answeredInRound = pool.length - queue.length;
+    poolDetail.textContent = `${pool.length} in this pool · ${queue.length} unseen this round`;
+    positionText.textContent = `Question ${answeredInRound} of ${pool.length} in this shuffle`;
+  };
+
+  categoryFilter.value = settings.category;
+  difficultyFilter.value = settings.difficulty;
+  const selectedTimer = timerInputs.find((input) => Number(input.value) === settings.timer) ?? timerInputs[0];
+  selectedTimer.checked = true;
+
+  categoryFilter.addEventListener('change', () => {
+    settings.category = categoryFilter.value;
+    saveSettings();
+    drawQuestion();
+  });
+
+  difficultyFilter.addEventListener('change', () => {
+    settings.difficulty = difficultyFilter.value;
+    saveSettings();
+    drawQuestion();
+  });
+
+  timerInputs.forEach((input) => input.addEventListener('change', () => {
+    if (!input.checked) return;
+    settings.timer = Number(input.value);
+    saveSettings();
+    resetTimer(false);
+  }));
+
+  document.querySelector('#next-question')?.addEventListener('click', drawQuestion);
+
+  revealButton.addEventListener('click', () => {
+    const willReveal = coachingPanel.hidden;
+    coachingPanel.hidden = !willReveal;
+    revealButton.setAttribute('aria-expanded', String(willReveal));
+    revealButton.querySelector('span')!.textContent = willReveal ? 'Hide coaching' : 'Reveal coaching';
+  });
+
+  practicedButton.addEventListener('click', () => {
+    const practiced = new Set(settings.practiced);
+    if (practiced.has(currentQuestion.id)) practiced.delete(currentQuestion.id);
+    else practiced.add(currentQuestion.id);
+    settings.practiced = [...practiced];
+    saveSettings();
+    updatePracticeUI();
+  });
+
+  timerToggle.addEventListener('click', () => {
+    if (timerIsRunning) {
+      stopTimer();
+      updateTimerUI();
+    } else {
+      startTimer();
+    }
+  });
+
+  document.querySelector('#timer-reset')?.addEventListener('click', () => resetTimer(true));
+
+  document.querySelector('#copy-question')?.addEventListener('click', async () => {
+    const text = `${currentQuestion.prompt}\n\nFollow-ups:\n${currentQuestion.followUps.map((item) => `- ${item}`).join('\n')}`;
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast('Question copied');
+    } catch {
+      showToast('Copy was blocked by this browser');
+    }
+  });
+
+  document.querySelector('#reset-session')?.addEventListener('click', () => {
+    settings = { ...defaultSettings, practiced: [...settings.practiced] };
+    queueState = { queues: {} };
+    categoryFilter.value = 'all';
+    difficultyFilter.value = 'all';
+    timerInputs.forEach((input) => { input.checked = input.value === '0'; });
+    saveSettings();
+    saveQueues();
+    drawQuestion();
+    showToast('Filters and shuffle reset');
+  });
+
+  drawQuestion();
+</script>
+
+<style>
+  .deck-summary {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .deck-summary strong {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 2.2rem;
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  .deck-summary span {
+    color: var(--muted);
+    font-size: 0.68rem;
+    font-weight: 680;
+    line-height: 1.25;
+    text-transform: uppercase;
+  }
+
+  .interview-workspace {
+    display: grid;
+    grid-template-columns: minmax(14rem, 17rem) minmax(0, 1fr);
+    align-items: start;
+    gap: 1rem;
+  }
+
+  .drill-controls {
+    position: sticky;
+    top: 5.5rem;
+    display: grid;
+    gap: 1.2rem;
+    padding: 1.15rem;
+  }
+
+  .control-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .control-heading h2 {
+    margin: 0.2rem 0 0;
+    font-size: 1rem;
+    letter-spacing: -0.02em;
+  }
+
+  .reset-link {
+    padding: 0;
+    border: 0;
+    color: var(--muted);
+    background: transparent;
+    font-size: 0.7rem;
+    text-decoration: underline;
+    text-underline-offset: 0.15rem;
+  }
+
+  .reset-link:hover { color: var(--text); }
+
+  .timer-fieldset {
+    display: grid;
+    gap: 0.45rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .timer-fieldset legend { margin-bottom: 0.45rem; }
+
+  .progress-card {
+    padding: 0.85rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--bg-elevated);
+  }
+
+  .progress-copy {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .progress-copy span,
+  .progress-card p {
+    color: var(--muted);
+    font-size: 0.67rem;
+  }
+
+  .progress-copy strong {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.35rem;
+    font-weight: 500;
+  }
+
+  .progress-track {
+    height: 0.28rem;
+    margin: 0.55rem 0;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--surface-soft);
+  }
+
+  .progress-track span {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--green);
+    transition: width 250ms ease;
+  }
+
+  .progress-card p { margin: 0; }
+
+  .question-stage {
+    position: relative;
+    display: flex;
+    min-height: 39rem;
+    flex-direction: column;
+    overflow: hidden;
+    padding: clamp(1.25rem, 3vw, 2.1rem);
+  }
+
+  .question-stage::before {
+    position: absolute;
+    top: -9rem;
+    right: -9rem;
+    width: 25rem;
+    height: 25rem;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--green) 7%, transparent);
+    content: '';
+    pointer-events: none;
+  }
+
+  .question-stage-top,
+  .question-footer {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .question-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .question-tags span {
+    padding: 0.3rem 0.55rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    background: var(--bg-elevated);
+    font-size: 0.67rem;
+    font-weight: 700;
+  }
+
+  .question-tags span:first-child {
+    border-color: color-mix(in srgb, var(--green) 32%, var(--line));
+    color: var(--green);
+    background: color-mix(in srgb, var(--green-soft) 52%, transparent);
+  }
+
+  .bookmark-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.65rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    background: transparent;
+    font-size: 0.7rem;
+    font-weight: 680;
+  }
+
+  .bookmark-button svg {
+    width: 1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.7;
+  }
+
+  .bookmark-button[aria-pressed='true'] {
+    border-color: color-mix(in srgb, var(--green) 40%, var(--line));
+    color: var(--green);
+    background: var(--green-soft);
+  }
+
+  .question-main {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    max-width: 53rem;
+    flex: 1;
+    align-content: center;
+    padding: clamp(3rem, 8vw, 6rem) 0;
+  }
+
+  .question-label,
+  .coaching-label {
+    margin: 0 0 0.7rem;
+    color: var(--faint);
+    font-size: 0.67rem;
+    font-weight: 800;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+  }
+
+  .question-main h2 {
+    margin: 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(2.2rem, 5vw, 4.25rem);
+    font-weight: 500;
+    letter-spacing: -0.045em;
+    line-height: 1.06;
+    text-wrap: balance;
+  }
+
+  .timer-module {
+    position: relative;
+    z-index: 2;
+    align-self: flex-end;
+    min-width: 8.25rem;
+    margin: 0 0 1rem;
+    padding: 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--bg-elevated);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .timer-readout {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.7rem;
+  }
+
+  .timer-readout span {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 1.2rem;
+    font-weight: 760;
+  }
+
+  .timer-readout small {
+    color: var(--muted);
+    font-size: 0.61rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .timer-actions {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+  }
+
+  .timer-actions button {
+    flex: 1;
+    padding: 0.3rem;
+    border: 1px solid var(--line);
+    border-radius: 0.4rem;
+    color: var(--muted);
+    background: var(--surface);
+    font-size: 0.61rem;
+    font-weight: 680;
+  }
+
+  .timer-expired {
+    border-color: color-mix(in srgb, var(--orange) 50%, var(--line));
+    background: var(--orange-soft);
+  }
+
+  .timer-expired .timer-readout { color: var(--orange); }
+
+  .coaching-panel {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.4rem;
+    margin: 0 0 1.4rem;
+    padding: 1rem;
+    border: 1px solid color-mix(in srgb, var(--green) 25%, var(--line));
+    border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--green-soft) 40%, transparent);
+  }
+
+  .coaching-panel[hidden] { display: none; }
+
+  .coaching-panel ul {
+    display: grid;
+    gap: 0.45rem;
+    margin: 0;
+    padding-left: 1.1rem;
+  }
+
+  .coaching-panel li,
+  .listen-for p:last-child {
+    color: var(--text);
+    font-size: 0.8rem;
+    line-height: 1.45;
+  }
+
+  .listen-for {
+    padding-left: 1.4rem;
+    border-left: 1px solid color-mix(in srgb, var(--green) 25%, var(--line));
+  }
+
+  .listen-for p:last-child { margin: 0; }
+
+  .question-footer {
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .question-actions-secondary { display: flex; gap: 0.35rem; }
+  .next-button { min-width: 9rem; }
+
+  .question-position {
+    margin: 0.65rem 0 0;
+    color: var(--faint);
+    font-size: 0.65rem;
+    text-align: right;
+  }
+
+  @media (max-width: 850px) {
+    .interview-workspace { grid-template-columns: 1fr; }
+    .drill-controls {
+      position: static;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-items: end;
+    }
+    .control-heading,
+    .progress-card,
+    .privacy-note { grid-column: 1 / -1; }
+    .question-stage { min-height: 36rem; }
+  }
+
+  @media (max-width: 620px) {
+    .deck-summary { display: none; }
+    .drill-controls { grid-template-columns: 1fr; }
+    .control-heading,
+    .progress-card,
+    .privacy-note { grid-column: auto; }
+    .question-stage { min-height: 40rem; }
+    .question-stage-top { align-items: flex-start; }
+    .bookmark-button span { display: none; }
+    .coaching-panel { grid-template-columns: 1fr; }
+    .listen-for {
+      padding: 1rem 0 0;
+      border-top: 1px solid color-mix(in srgb, var(--green) 25%, var(--line));
+      border-left: 0;
+    }
+    .question-footer {
+      align-items: stretch;
+      flex-direction: column-reverse;
+    }
+    .question-actions-secondary { justify-content: space-between; }
+    .question-actions-secondary > * { flex: 1; }
+    .timer-module {
+      position: static;
+      width: 100%;
+    }
+    .question-position { text-align: left; }
+  }
+</style>

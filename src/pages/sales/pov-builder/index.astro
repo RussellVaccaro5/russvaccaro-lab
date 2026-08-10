@@ -1,0 +1,318 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PageIntro from '../../../components/PageIntro.astro';
+import discoveryQuestions from '../../../data/discovery-questions.json';
+---
+
+<BaseLayout
+  title="Account POV Builder — Russ Vaccaro Lab"
+  description="A browser-only workspace for building a testable target-account point of view."
+>
+  <div class="page-shell pov-page">
+    <PageIntro
+      eyebrow="Sales research tool · Experiment 06"
+      title="Account POV builder"
+      description="Move from scattered account signals to a commercial hypothesis you can test. Separate what you know, what you infer, and what discovery still needs to prove."
+      status="Saves locally"
+    >
+      <div class="completion-card" aria-label="POV completion">
+        <strong id="completion-count">0 / 8</strong>
+        <span>sections drafted</span>
+      </div>
+    </PageIntro>
+
+    <section class="account-strip tool-panel" aria-label="Account details">
+      <div class="field-group">
+        <label for="account">Target account</label>
+        <input id="account" type="text" placeholder="Company name" autocomplete="off" />
+      </div>
+      <div class="field-group">
+        <label for="solution">Solution lens</label>
+        <input id="solution" type="text" placeholder="Product, category, or initiative" autocomplete="off" />
+      </div>
+      <div class="save-state" aria-live="polite"><span></span><p id="save-state">Draft stored in this browser</p></div>
+    </section>
+
+    <div class="pov-workspace">
+      <section class="builder-column" aria-label="Point of view inputs">
+        {discoveryQuestions.map((question, index) => (
+          <article class="pov-field" data-field={question.id}>
+            <div class="pov-field-heading">
+              <span>{String(index + 1).padStart(2, '0')}</span>
+              <div><h2>{question.label}</h2><p>{question.prompt}</p></div>
+            </div>
+            <label class="sr-only" for={`pov-${question.id}`}>{question.label}</label>
+            <textarea id={`pov-${question.id}`} rows="5" placeholder={question.placeholder}></textarea>
+          </article>
+        ))}
+      </section>
+
+      <aside class="output-column">
+        <div class="output-panel tool-panel">
+          <div class="output-heading">
+            <div><p class="kicker">Live output</p><h2>Your account POV</h2></div>
+            <span>Markdown</span>
+          </div>
+          <pre id="pov-output" tabindex="0">Start with the account and the signal that makes it worth investigating.</pre>
+          <div class="output-actions">
+            <button class="button" id="copy-pov" type="button">Copy POV</button>
+            <button class="button-secondary" id="download-pov" type="button">Download .md</button>
+            <button class="button-ghost" id="reset-pov" type="button">Reset</button>
+          </div>
+        </div>
+
+        <div class="quality-check">
+          <p class="kicker">Pressure test</p>
+          <h2>A useful POV should survive correction.</h2>
+          <ul>
+            <li><span></span>Names a specific change or trigger</li>
+            <li><span></span>Connects technical conditions to business impact</li>
+            <li><span></span>Marks assumptions that discovery must test</li>
+            <li><span></span>Earns a reasonable next conversation</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="toast-region" aria-live="polite" aria-atomic="true"></div>
+</BaseLayout>
+
+<script>
+  import discoveryQuestions from '../../../data/discovery-questions.json';
+
+  const STORAGE_KEY = 'rv-lab-pov-builder-v1';
+  const accountInput = document.querySelector<HTMLInputElement>('#account')!;
+  const solutionInput = document.querySelector<HTMLInputElement>('#solution')!;
+  const textareas = [...document.querySelectorAll<HTMLTextAreaElement>('[data-field] textarea')];
+  const output = document.querySelector<HTMLElement>('#pov-output')!;
+  const completionCount = document.querySelector<HTMLElement>('#completion-count')!;
+  const saveState = document.querySelector<HTMLElement>('#save-state')!;
+  const copyButton = document.querySelector<HTMLButtonElement>('#copy-pov')!;
+  const downloadButton = document.querySelector<HTMLButtonElement>('#download-pov')!;
+  const resetButton = document.querySelector<HTMLButtonElement>('#reset-pov')!;
+  const toastRegion = document.querySelector<HTMLElement>('.toast-region')!;
+
+  type PovState = { account: string; solution: string; fields: Record<string, string> };
+
+  const showToast = (message: string) => {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    toastRegion.append(toast);
+    window.setTimeout(() => toast.remove(), 2000);
+  };
+
+  const getState = (): PovState => ({
+    account: accountInput.value.trim(),
+    solution: solutionInput.value.trim(),
+    fields: Object.fromEntries(textareas.map((textarea) => [textarea.closest<HTMLElement>('[data-field]')!.dataset.field!, textarea.value.trim()])),
+  });
+
+  const buildMarkdown = (state: PovState) => {
+    const account = state.account || '[Target account]';
+    const solution = state.solution || '[Solution lens]';
+    const body = discoveryQuestions.flatMap((question) => [
+      `## ${question.label}`,
+      state.fields[question.id] || '_Not drafted yet._',
+      '',
+    ]);
+
+    return [
+      `# Account POV — ${account}`,
+      '',
+      `**Solution lens:** ${solution}`,
+      '',
+      ...body,
+      '---',
+      '_Working hypothesis: verify assumptions in discovery before treating them as account truth._',
+    ].join('\n');
+  };
+
+  let saveTimer = 0;
+  const update = () => {
+    const state = getState();
+    const complete = Object.values(state.fields).filter(Boolean).length;
+    output.textContent = buildMarkdown(state);
+    completionCount.textContent = `${complete} / ${discoveryQuestions.length}`;
+    saveState.textContent = 'Saving locally…';
+    window.clearTimeout(saveTimer);
+    saveTimer = window.setTimeout(() => {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        saveState.textContent = 'Draft stored in this browser';
+      } catch {
+        saveState.textContent = 'Browser storage is unavailable';
+      }
+    }, 250);
+  };
+
+  const restore = () => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (!stored) return;
+      const state = JSON.parse(stored) as Partial<PovState>;
+      accountInput.value = state.account ?? '';
+      solutionInput.value = state.solution ?? '';
+      textareas.forEach((textarea) => {
+        const id = textarea.closest<HTMLElement>('[data-field]')!.dataset.field!;
+        textarea.value = state.fields?.[id] ?? '';
+      });
+    } catch { /* Ignore malformed or unavailable storage. */ }
+  };
+
+  [accountInput, solutionInput, ...textareas].forEach((input) => input.addEventListener('input', update));
+
+  copyButton.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(buildMarkdown(getState()));
+      showToast('Account POV copied');
+    } catch { showToast('Copy was blocked by the browser'); }
+  });
+
+  downloadButton.addEventListener('click', () => {
+    const state = getState();
+    const filename = `${state.account || 'account'}-pov`.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const blob = new Blob([buildMarkdown(state)], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `${filename}.md`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+    showToast('Markdown downloaded');
+  });
+
+  resetButton.addEventListener('click', () => {
+    if (!window.confirm('Reset this locally saved POV draft?')) return;
+    accountInput.value = '';
+    solutionInput.value = '';
+    textareas.forEach((textarea) => { textarea.value = ''; });
+    try { localStorage.removeItem(STORAGE_KEY); } catch { /* No stored state to remove. */ }
+    update();
+    showToast('POV draft reset');
+  });
+
+  restore();
+  update();
+</script>
+
+<style>
+  .completion-card {
+    display: grid;
+    min-width: 8.5rem;
+    justify-items: center;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .completion-card strong { font-family: Georgia, 'Times New Roman', serif; font-size: 1.55rem; font-weight: 500; line-height: 1; }
+  .completion-card span { margin-top: 0.25rem; color: var(--muted); font-size: 0.58rem; font-weight: 740; letter-spacing: 0.08em; text-transform: uppercase; }
+
+  .account-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    align-items: end;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+    padding: 0.9rem;
+  }
+
+  .save-state {
+    display: flex;
+    min-height: 2.75rem;
+    align-items: center;
+    gap: 0.48rem;
+    padding: 0 0.7rem;
+    color: var(--muted);
+  }
+
+  .save-state span { width: 0.42rem; height: 0.42rem; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px color-mix(in srgb, var(--green) 12%, transparent); }
+  .save-state p { margin: 0; font-size: 0.67rem; }
+
+  .pov-workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(20rem, 0.85fr);
+    align-items: start;
+    gap: 1rem;
+  }
+
+  .builder-column { display: grid; gap: 0.8rem; }
+
+  .pov-field {
+    padding: 1.1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .pov-field-heading {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: 0.7rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .pov-field-heading > span { color: var(--blue); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.68rem; }
+  .pov-field h2 { margin: 0; font-family: Georgia, 'Times New Roman', serif; font-size: 1.45rem; font-weight: 500; letter-spacing: -0.035em; }
+  .pov-field-heading p { margin: 0.25rem 0 0; color: var(--muted); font-size: 0.75rem; }
+
+  .pov-field textarea {
+    width: 100%;
+    resize: vertical;
+    padding: 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 0.65rem;
+    color: var(--text);
+    background: var(--bg-elevated);
+    line-height: 1.5;
+  }
+
+  .output-column { position: sticky; top: 5.5rem; display: grid; gap: 1rem; }
+  .output-panel { overflow: hidden; }
+  .output-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: 1.1rem; border-bottom: 1px solid var(--line); }
+  .output-heading h2 { margin: 0.28rem 0 0; font-family: Georgia, 'Times New Roman', serif; font-size: 1.7rem; font-weight: 500; letter-spacing: -0.04em; }
+  .output-heading > span { padding: 0.25rem 0.48rem; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.58rem; }
+
+  pre {
+    max-height: 31rem;
+    min-height: 23rem;
+    margin: 0;
+    padding: 1rem;
+    overflow: auto;
+    color: var(--muted);
+    background: var(--bg-elevated);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.7rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+
+  .output-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; padding: 0.8rem; border-top: 1px solid var(--line); }
+  .output-actions .button-ghost { grid-column: 1 / -1; min-height: 2rem; }
+
+  .quality-check { padding: 1.1rem; border: 1px solid color-mix(in srgb, var(--blue) 25%, var(--line)); border-radius: var(--radius-lg); background: color-mix(in srgb, var(--blue-soft) 32%, transparent); }
+  .quality-check h2 { margin: 0.4rem 0 1rem; font-family: Georgia, 'Times New Roman', serif; font-size: 1.65rem; font-weight: 500; letter-spacing: -0.04em; line-height: 1.05; }
+  .quality-check ul { display: grid; gap: 0.55rem; margin: 0; padding: 0; list-style: none; }
+  .quality-check li { display: flex; align-items: flex-start; gap: 0.5rem; color: var(--muted); font-size: 0.72rem; }
+  .quality-check li span { width: 0.38rem; height: 0.38rem; flex: 0 0 auto; margin-top: 0.36rem; border-radius: 50%; background: var(--blue); }
+
+  @media (max-width: 920px) {
+    .account-strip { grid-template-columns: 1fr 1fr; }
+    .save-state { grid-column: 1 / -1; min-height: auto; }
+    .pov-workspace { grid-template-columns: 1fr; }
+    .output-column { position: static; }
+  }
+
+  @media (max-width: 600px) {
+    .completion-card { display: none; }
+    .account-strip { grid-template-columns: 1fr; }
+    .save-state { grid-column: auto; }
+    .output-actions { grid-template-columns: 1fr; }
+    .output-actions .button-ghost { grid-column: auto; }
+  }
+</style>

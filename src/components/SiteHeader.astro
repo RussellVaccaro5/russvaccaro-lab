@@ -1,0 +1,93 @@
+---
+const pathname = Astro.url.pathname;
+
+const links = [
+  { href: '/', label: 'Projects' },
+  { href: '/sales/', label: 'Sales' },
+  { href: '/reading/', label: 'Reading' },
+  { href: '/learning/', label: 'Learning' },
+  { href: '/tools/scratchpad/', label: 'Scratchpad' },
+  { href: '/changelog/', label: 'Changelog' },
+];
+
+const isActive = (href: string) =>
+  href === '/' ? pathname === '/' : pathname.startsWith(href);
+---
+
+<header class="site-header">
+  <div class="shell header-inner">
+    <a class="brand" href="/" aria-label="Russ Vaccaro Lab home">
+      <span class="brand-mark" aria-hidden="true">RV</span>
+      <span class="brand-name">Russ Vaccaro <em>Lab</em></span>
+    </a>
+
+    <nav class="desktop-nav" aria-label="Primary navigation">
+      {links.map((link) => (
+        <a href={link.href} aria-current={isActive(link.href) ? 'page' : undefined}>
+          {link.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="header-actions">
+      <a class="main-site-link" href="https://russvaccaro.com">Main site ↗</a>
+      <button class="icon-button theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme">
+        <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.41M17.66 6.34l1.41-1.41"></path>
+        </svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M20.2 15.2A8.5 8.5 0 1 1 8.8 3.8a6.7 6.7 0 0 0 11.4 11.4Z"></path>
+        </svg>
+      </button>
+      <button class="icon-button menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Open navigation">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+      </button>
+    </div>
+  </div>
+
+  <nav class="mobile-nav" id="mobile-nav" aria-label="Mobile navigation" hidden>
+    <div class="shell">
+      {links.map((link) => (
+        <a href={link.href} aria-current={isActive(link.href) ? 'page' : undefined}>
+          <span>{link.label}</span><span aria-hidden="true">↗</span>
+        </a>
+      ))}
+      <a href="https://russvaccaro.com"><span>Main site</span><span aria-hidden="true">↗</span></a>
+    </div>
+  </nav>
+</header>
+
+<script>
+  const root = document.documentElement;
+  const themeToggle = document.querySelector<HTMLButtonElement>('.theme-toggle');
+  const menuToggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
+  const mobileNav = document.querySelector<HTMLElement>('#mobile-nav');
+
+  const updateThemeLabel = () => {
+    const isDark = root.dataset.theme === 'dark';
+    themeToggle?.setAttribute('aria-label', `Switch to ${isDark ? 'light' : 'dark'} theme`);
+    themeToggle?.setAttribute('title', `Switch to ${isDark ? 'light' : 'dark'} theme`);
+  };
+
+  updateThemeLabel();
+
+  themeToggle?.addEventListener('click', () => {
+    const nextTheme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = nextTheme;
+    try {
+      localStorage.setItem('rv-lab-theme', nextTheme);
+    } catch {
+      // Theme switching still works for the current page when storage is blocked.
+    }
+    updateThemeLabel();
+  });
+
+  menuToggle?.addEventListener('click', () => {
+    if (!mobileNav) return;
+    const willOpen = mobileNav.hidden;
+    mobileNav.hidden = !willOpen;
+    menuToggle.setAttribute('aria-expanded', String(willOpen));
+    menuToggle.setAttribute('aria-label', `${willOpen ? 'Close' : 'Open'} navigation`);
+  });
+</script>

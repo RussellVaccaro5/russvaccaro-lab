@@ -1,0 +1,381 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageIntro from '../../components/PageIntro.astro';
+import books from '../../data/books.json';
+
+const topics = [...new Set(books.map((book) => book.topic))].sort();
+const statuses = ['Reading', 'Queue', 'Finished'];
+const finishedCount = books.filter((book) => book.status === 'Finished').length;
+---
+
+<BaseLayout
+  title="Reading Explorer — Russ Vaccaro Lab"
+  description="A searchable, filterable reading log built from a small JSON catalog."
+>
+  <div class="page-shell reading-page">
+    <PageIntro
+      eyebrow="Data-driven page · Experiment 04"
+      title="Reading explorer"
+      description="Turn a flat reading list into a shelf you can search by idea, topic, author, or status. The starter catalog lives in one editable JSON file."
+      status="Starter data"
+    >
+      <div class="reading-summary" aria-label="Reading catalog summary">
+        <div><strong>{books.length}</strong><span>titles</span></div>
+        <div><strong>{finishedCount}</strong><span>finished</span></div>
+      </div>
+    </PageIntro>
+
+    <section class="reading-controls tool-panel" aria-label="Reading filters">
+      <div class="field-group search-field">
+        <label for="book-search">Search</label>
+        <input id="book-search" type="search" placeholder="Title, author, or idea…" autocomplete="off" />
+      </div>
+      <div class="field-group">
+        <label for="topic-filter">Topic</label>
+        <select id="topic-filter">
+          <option value="all">All topics</option>
+          {topics.map((topic) => <option value={topic}>{topic}</option>)}
+        </select>
+      </div>
+      <div class="field-group">
+        <label for="status-filter">Status</label>
+        <select id="status-filter">
+          <option value="all">All statuses</option>
+          {statuses.map((status) => <option value={status}>{status}</option>)}
+        </select>
+      </div>
+      <div class="field-group">
+        <label for="sort-books">Sort</label>
+        <select id="sort-books">
+          <option value="status">Status</option>
+          <option value="title">Title</option>
+          <option value="topic">Topic</option>
+          <option value="year-new">Newest</option>
+        </select>
+      </div>
+    </section>
+
+    <div class="results-row">
+      <p id="result-count" aria-live="polite">Showing {books.length} titles</p>
+      <button class="text-button" id="clear-filters" type="button">Clear filters</button>
+    </div>
+
+    <section class="book-grid" id="book-grid" aria-label="Reading catalog">
+      {books.map((book) => (
+        <article
+          class="book-card"
+          data-title={book.title}
+          data-author={book.author}
+          data-topic={book.topic}
+          data-status={book.status}
+          data-year={book.year}
+          data-search={`${book.title} ${book.author} ${book.topic} ${book.note}`.toLowerCase()}
+        >
+          <div class="book-topline">
+            <span class={`book-status status-${book.status.toLowerCase()}`}>{book.status}</span>
+            <span class="book-year">{book.year}</span>
+          </div>
+          <div class="book-copy">
+            <p class="book-topic">{book.topic}</p>
+            <h2>{book.title}</h2>
+            <p class="book-author">{book.author}</p>
+          </div>
+          <p class="book-note">{book.note}</p>
+          <div class="book-rating" aria-label={book.rating ? `${book.rating} out of 5 stars` : 'Not yet rated'}>
+            {book.rating ? `${'★'.repeat(book.rating)}${'☆'.repeat(5 - book.rating)}` : 'Not yet rated'}
+          </div>
+        </article>
+      ))}
+    </section>
+
+    <div class="empty-state" id="empty-state" hidden>
+      <p class="eyebrow">No matches</p>
+      <h2>Nothing on this shelf fits those filters.</h2>
+      <button class="button-secondary" id="empty-clear" type="button">Reset the shelf</button>
+    </div>
+
+    <section class="data-note" aria-labelledby="data-note-title">
+      <div>
+        <p class="kicker">How to make it yours</p>
+        <h2 id="data-note-title">One file controls the shelf.</h2>
+      </div>
+      <p>Replace the starter entries in <code>src/data/books.json</code>. Astro renders the catalog; the browser handles search, filters, and sorting without a database.</p>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  const searchInput = document.querySelector<HTMLInputElement>('#book-search')!;
+  const topicFilter = document.querySelector<HTMLSelectElement>('#topic-filter')!;
+  const statusFilter = document.querySelector<HTMLSelectElement>('#status-filter')!;
+  const sortSelect = document.querySelector<HTMLSelectElement>('#sort-books')!;
+  const grid = document.querySelector<HTMLElement>('#book-grid')!;
+  const resultCount = document.querySelector<HTMLElement>('#result-count')!;
+  const clearButton = document.querySelector<HTMLButtonElement>('#clear-filters')!;
+  const emptyClear = document.querySelector<HTMLButtonElement>('#empty-clear')!;
+  const emptyState = document.querySelector<HTMLElement>('#empty-state')!;
+  const cards = [...document.querySelectorAll<HTMLElement>('.book-card')];
+
+  const statusOrder: Record<string, number> = { Reading: 0, Queue: 1, Finished: 2 };
+
+  const compareCards = (a: HTMLElement, b: HTMLElement) => {
+    if (sortSelect.value === 'title') return a.dataset.title!.localeCompare(b.dataset.title!);
+    if (sortSelect.value === 'topic') return a.dataset.topic!.localeCompare(b.dataset.topic!) || a.dataset.title!.localeCompare(b.dataset.title!);
+    if (sortSelect.value === 'year-new') return Number(b.dataset.year) - Number(a.dataset.year);
+    return statusOrder[a.dataset.status!] - statusOrder[b.dataset.status!] || a.dataset.title!.localeCompare(b.dataset.title!);
+  };
+
+  const applyFilters = () => {
+    const query = searchInput.value.trim().toLowerCase();
+    let visible = 0;
+
+    cards.sort(compareCards).forEach((card) => {
+      const matchesSearch = !query || card.dataset.search!.includes(query);
+      const matchesTopic = topicFilter.value === 'all' || card.dataset.topic === topicFilter.value;
+      const matchesStatus = statusFilter.value === 'all' || card.dataset.status === statusFilter.value;
+      card.hidden = !(matchesSearch && matchesTopic && matchesStatus);
+      if (!card.hidden) visible += 1;
+      grid.append(card);
+    });
+
+    resultCount.textContent = `Showing ${visible} ${visible === 1 ? 'title' : 'titles'}`;
+    emptyState.hidden = visible !== 0;
+  };
+
+  const clearFilters = () => {
+    searchInput.value = '';
+    topicFilter.value = 'all';
+    statusFilter.value = 'all';
+    sortSelect.value = 'status';
+    applyFilters();
+    searchInput.focus();
+  };
+
+  searchInput.addEventListener('input', applyFilters);
+  topicFilter.addEventListener('change', applyFilters);
+  statusFilter.addEventListener('change', applyFilters);
+  sortSelect.addEventListener('change', applyFilters);
+  clearButton.addEventListener('click', clearFilters);
+  emptyClear.addEventListener('click', clearFilters);
+  applyFilters();
+</script>
+
+<style>
+  .reading-summary {
+    display: flex;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .reading-summary > div {
+    display: grid;
+    min-width: 5.8rem;
+    justify-items: center;
+    padding: 0.7rem 0.9rem;
+  }
+
+  .reading-summary > div + div { border-left: 1px solid var(--line); }
+
+  .reading-summary strong {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.65rem;
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  .reading-summary span {
+    margin-top: 0.2rem;
+    color: var(--muted);
+    font-size: 0.6rem;
+    font-weight: 720;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .reading-controls {
+    display: grid;
+    grid-template-columns: minmax(15rem, 1.6fr) repeat(3, minmax(8rem, 0.7fr));
+    gap: 0.8rem;
+    padding: 0.9rem;
+  }
+
+  .field-group input[type='search'],
+  .field-group select {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 0.65rem;
+    color: var(--text);
+    background: var(--bg-elevated);
+  }
+
+  .results-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 4rem;
+  }
+
+  .results-row p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+
+  .text-button {
+    min-height: auto;
+    padding: 0.35rem 0;
+    border: 0;
+    color: var(--green);
+    background: transparent;
+  }
+
+  .book-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .book-card {
+    display: flex;
+    min-height: 23rem;
+    flex-direction: column;
+    padding: 1.2rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .book-card[hidden] { display: none; }
+
+  .book-topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .book-status {
+    padding: 0.25rem 0.48rem;
+    border-radius: 999px;
+    color: var(--status-color);
+    background: color-mix(in srgb, var(--status-color) 12%, transparent);
+    font-size: 0.62rem;
+    font-weight: 750;
+  }
+
+  .status-reading { --status-color: var(--blue); }
+  .status-queue { --status-color: var(--orange); }
+  .status-finished { --status-color: var(--green); }
+
+  .book-year {
+    color: var(--faint);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.67rem;
+  }
+
+  .book-copy { padding-block: 2.5rem 1.2rem; }
+
+  .book-topic {
+    margin: 0;
+    color: var(--green);
+    font-size: 0.64rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .book-copy h2 {
+    margin: 0.42rem 0 0.4rem;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(1.75rem, 3vw, 2.35rem);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  .book-author {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+
+  .book-note {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.8rem;
+    line-height: 1.55;
+  }
+
+  .book-rating {
+    margin-top: auto;
+    padding-top: 1.25rem;
+    color: var(--orange);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+  }
+
+  .empty-state {
+    justify-items: start;
+    padding: 4rem 0;
+  }
+
+  .empty-state:not([hidden]) { display: grid; }
+
+  .empty-state h2 {
+    max-width: 35rem;
+    margin: 0.5rem 0 1.3rem;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  .data-note {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: clamp(2rem, 8vw, 7rem);
+    margin-top: clamp(5rem, 10vw, 9rem);
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .data-note h2 {
+    margin: 0.4rem 0 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(2rem, 4vw, 3.4rem);
+    font-weight: 500;
+    letter-spacing: -0.045em;
+    line-height: 1;
+  }
+
+  .data-note > p {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  code {
+    padding: 0.13rem 0.3rem;
+    border-radius: 0.3rem;
+    color: var(--text);
+    background: var(--surface-soft);
+    font-size: 0.83em;
+  }
+
+  @media (max-width: 920px) {
+    .reading-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .book-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 620px) {
+    .reading-summary { display: none; }
+    .reading-controls,
+    .book-grid,
+    .data-note { grid-template-columns: 1fr; }
+  }
+</style>

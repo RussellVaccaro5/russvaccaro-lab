@@ -1,0 +1,118 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageIntro from '../../components/PageIntro.astro';
+import StatusBadge from '../../components/StatusBadge.astro';
+
+const entries = [
+  {
+    date: 'August 9, 2026',
+    version: '0.3.0',
+    title: 'Four source folders, one canonical lab',
+    summary: 'Audited the four overlapping Astro packages and retained the most complete, cohesive implementation as the publishable source.',
+    changes: [
+      'Kept all six working browser experiments in one shared design system.',
+      'Excluded unfinished starter-blog pages, Lorem ipsum content, and duplicate root-level artifacts.',
+      'Added a site-specific social preview card and complete Open Graph and X metadata.',
+      'Verified all 10 static HTML routes with zero Astro diagnostics.',
+    ],
+    status: 'Shipped' as const,
+  },
+  {
+    date: 'August 8, 2026',
+    version: '0.2.0',
+    title: 'The lab becomes a system',
+    summary: 'Merged the original site foundation with three working browser prototypes and made the build progression visible.',
+    changes: [
+      'Added the Reading Explorer, sales hub, MEDDPICC Scorecard, and Account POV Builder.',
+      'Integrated the Interview Drill, Local Scratchpad, and randomized Learning Cards.',
+      'Added shared experiment cards with status, technologies, learning, and the next planned improvement.',
+      'Kept every interactive tool static-hosting friendly with browser-only persistence.',
+    ],
+    status: 'Shipped' as const,
+  },
+  {
+    date: 'August 8, 2026',
+    version: '0.1.0',
+    title: 'First complete interaction loops',
+    summary: 'Built three narrow tools that work without accounts, APIs, databases, or server-side code.',
+    changes: [
+      'Interview Drill: 36 prompts, filters, timers, follow-up coaching, and local progress.',
+      'Local Scratchpad: auto-save, quick structures, live counts, copying, clearing, and Markdown export.',
+      'Learning Cards: 30 cards across five topics with a persistent no-repeat shuffle bag.',
+    ],
+    status: 'Shipped' as const,
+  },
+  {
+    date: 'August 7, 2026',
+    version: '0.0.1',
+    title: 'Astro playground established',
+    summary: 'Defined the lab as a separate Vercel-deployed Astro project connected to lab.russvaccaro.com.',
+    changes: [
+      'Chose static Astro as the default architecture.',
+      'Set the rule: add complexity only after a small experiment proves it needs the next layer.',
+      'Linked the lab back to russvaccaro.com instead of creating another About page.',
+    ],
+    status: 'Prototype' as const,
+  },
+];
+---
+
+<BaseLayout
+  title="Changelog — Russ Vaccaro Lab"
+  description="A public record of what changed in the lab and what each iteration taught."
+>
+  <div class="page-shell changelog-page">
+    <PageIntro
+      eyebrow="Build in public"
+      title="Changelog"
+      description="A short record of what shipped, why it changed, and how the lab is becoming more capable without becoming unnecessarily complicated."
+    />
+
+    <section class="timeline" aria-label="Lab changelog">
+      {entries.map((entry) => (
+        <article class="timeline-entry">
+          <div class="entry-meta">
+            <time>{entry.date}</time>
+            <span>{entry.version}</span>
+          </div>
+          <div class="entry-body">
+            <StatusBadge status={entry.status} />
+            <h2>{entry.title}</h2>
+            <p>{entry.summary}</p>
+            <ul>
+              {entry.changes.map((change) => <li>{change}</li>)}
+            </ul>
+          </div>
+        </article>
+      ))}
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .timeline { border-top: 1px solid var(--line); }
+
+  .timeline-entry {
+    display: grid;
+    grid-template-columns: 12rem minmax(0, 1fr);
+    gap: clamp(2rem, 8vw, 7rem);
+    padding-block: 2.25rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .entry-meta { display: grid; align-content: start; gap: 0.25rem; }
+  .entry-meta time { color: var(--text); font-size: 0.78rem; font-weight: 720; }
+  .entry-meta span { color: var(--faint); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.67rem; }
+
+  .entry-body { max-width: 48rem; }
+  .entry-body h2 { margin: 1rem 0 0.6rem; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(2rem, 4vw, 3.25rem); font-weight: 500; letter-spacing: -0.045em; line-height: 1; }
+  .entry-body > p { margin: 0; color: var(--muted); }
+  .entry-body ul { display: grid; gap: 0.55rem; margin: 1.3rem 0 0; padding: 1rem 0 0; border-top: 1px solid var(--line); list-style: none; }
+  .entry-body li { position: relative; padding-left: 1.1rem; color: var(--muted); font-size: 0.82rem; }
+  .entry-body li::before { position: absolute; top: 0.62rem; left: 0; width: 0.36rem; height: 0.36rem; border-radius: 50%; background: var(--green); content: ''; }
+
+  @media (max-width: 680px) {
+    .timeline-entry { grid-template-columns: 1fr; gap: 1rem; }
+    .entry-meta { display: flex; align-items: center; justify-content: space-between; }
+  }
+</style>

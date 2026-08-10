@@ -1,0 +1,444 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PageIntro from '../../../components/PageIntro.astro';
+
+const criteria = [
+  { id: 'metrics', code: 'M', title: 'Metrics', prompt: 'What measurable business or technical outcome justifies change?' },
+  { id: 'economic-buyer', code: 'E', title: 'Economic buyer', prompt: 'Who can authorize the spend, and what outcome matters to them?' },
+  { id: 'decision-criteria', code: 'D', title: 'Decision criteria', prompt: 'Which technical, business, and commercial requirements will determine the choice?' },
+  { id: 'decision-process', code: 'D', title: 'Decision process', prompt: 'Who evaluates, recommends, approves, and communicates the decision—and when?' },
+  { id: 'paper-process', code: 'P', title: 'Paper process', prompt: 'Which security, legal, procurement, and contracting steps remain?' },
+  { id: 'identify-pain', code: 'I', title: 'Identify pain', prompt: 'What problem is material enough to require action, and why now?' },
+  { id: 'champion', code: 'C', title: 'Champion', prompt: 'Who has influence, a personal win, and evidence of acting on your behalf?' },
+  { id: 'competition', code: 'C', title: 'Competition', prompt: 'Which vendor, internal build, delay, or status quo could win instead?' },
+];
+
+const scoreOptions = [
+  { value: 0, label: 'Unknown' },
+  { value: 1, label: 'Weak' },
+  { value: 2, label: 'Developing' },
+  { value: 3, label: 'Strong' },
+];
+---
+
+<BaseLayout
+  title="MEDDPICC Scorecard — Russ Vaccaro Lab"
+  description="An evidence-first, locally saved MEDDPICC deal inspection scorecard."
+>
+  <div class="page-shell meddpicc-page">
+    <PageIntro
+      eyebrow="Sales operating tool · Experiment 05"
+      title="MEDDPICC scorecard"
+      description="Score the evidence, not your confidence. The total gives you a quick risk signal; the notes show what to verify next."
+      status="Saves locally"
+    >
+      <div class="score-ring" id="score-ring" style="--score: 0" aria-label="Deal score: 0 percent">
+        <strong id="score-percent">0%</strong>
+        <span>evidence</span>
+      </div>
+    </PageIntro>
+
+    <section class="deal-header tool-panel" aria-label="Deal details">
+      <div class="field-group">
+        <label for="account-name">Account</label>
+        <input id="account-name" type="text" placeholder="Account name" autocomplete="off" />
+      </div>
+      <div class="field-group">
+        <label for="deal-name">Opportunity</label>
+        <input id="deal-name" type="text" placeholder="Opportunity or initiative" autocomplete="off" />
+      </div>
+      <div class="deal-health">
+        <span class="health-dot" id="health-dot" aria-hidden="true"></span>
+        <div><span>Current signal</span><strong id="health-label">Discovery needed</strong></div>
+      </div>
+    </section>
+
+    <section class="criteria-grid" aria-label="MEDDPICC criteria">
+      {criteria.map((criterion, index) => (
+        <article class="criterion-card" data-criterion={criterion.id} data-title={criterion.title}>
+          <div class="criterion-heading">
+            <span class="criterion-code">{criterion.code}</span>
+            <div>
+              <p>Criterion {String(index + 1).padStart(2, '0')}</p>
+              <h2>{criterion.title}</h2>
+            </div>
+          </div>
+          <p class="criterion-prompt">{criterion.prompt}</p>
+          <fieldset>
+            <legend>Evidence strength</legend>
+            <div class="score-options">
+              {scoreOptions.map((option) => (
+                <label>
+                  <input type="radio" name={`score-${criterion.id}`} value={option.value} checked={option.value === 0} />
+                  <span><strong>{option.value}</strong>{option.label}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+          <div class="field-group evidence-field">
+            <label for={`evidence-${criterion.id}`}>Evidence and next test</label>
+            <textarea id={`evidence-${criterion.id}`} rows="4" placeholder="What do you know, how do you know it, and what action would strengthen the evidence?"></textarea>
+          </div>
+        </article>
+      ))}
+    </section>
+
+    <section class="review-panel tool-panel" aria-labelledby="review-title">
+      <div>
+        <p class="kicker">Deal inspection</p>
+        <h2 id="review-title">What the score says</h2>
+        <p id="review-copy">Start scoring the eight criteria to expose the largest evidence gaps.</p>
+      </div>
+      <div class="review-stats">
+        <div><strong id="points-total">0 / 24</strong><span>points</span></div>
+        <div><strong id="gap-total">8</strong><span>weak areas</span></div>
+      </div>
+      <div class="review-actions">
+        <button class="button-secondary" id="copy-review" type="button">Copy summary</button>
+        <button class="button-ghost" id="reset-scorecard" type="button">Reset scorecard</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="toast-region" aria-live="polite" aria-atomic="true"></div>
+</BaseLayout>
+
+<script>
+  const STORAGE_KEY = 'rv-lab-meddpicc-v1';
+  const criterionCards = [...document.querySelectorAll<HTMLElement>('[data-criterion]')];
+  const accountInput = document.querySelector<HTMLInputElement>('#account-name')!;
+  const dealInput = document.querySelector<HTMLInputElement>('#deal-name')!;
+  const scoreRing = document.querySelector<HTMLElement>('#score-ring')!;
+  const scorePercent = document.querySelector<HTMLElement>('#score-percent')!;
+  const healthDot = document.querySelector<HTMLElement>('#health-dot')!;
+  const healthLabel = document.querySelector<HTMLElement>('#health-label')!;
+  const pointsTotal = document.querySelector<HTMLElement>('#points-total')!;
+  const gapTotal = document.querySelector<HTMLElement>('#gap-total')!;
+  const reviewCopy = document.querySelector<HTMLElement>('#review-copy')!;
+  const copyButton = document.querySelector<HTMLButtonElement>('#copy-review')!;
+  const resetButton = document.querySelector<HTMLButtonElement>('#reset-scorecard')!;
+  const toastRegion = document.querySelector<HTMLElement>('.toast-region')!;
+
+  type CriterionState = { score: number; evidence: string };
+  type ScorecardState = { account: string; deal: string; criteria: Record<string, CriterionState> };
+
+  const showToast = (message: string) => {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    toastRegion.append(toast);
+    window.setTimeout(() => toast.remove(), 2000);
+  };
+
+  const getState = (): ScorecardState => ({
+    account: accountInput.value.trim(),
+    deal: dealInput.value.trim(),
+    criteria: Object.fromEntries(criterionCards.map((card) => {
+      const id = card.dataset.criterion!;
+      const selected = card.querySelector<HTMLInputElement>('input[type="radio"]:checked')!;
+      const evidence = card.querySelector<HTMLTextAreaElement>('textarea')!;
+      return [id, { score: Number(selected.value), evidence: evidence.value.trim() }];
+    })),
+  });
+
+  const saveState = () => {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(getState())); } catch { /* Remains usable without storage. */ }
+  };
+
+  const updateSummary = () => {
+    const state = getState();
+    const entries = Object.values(state.criteria);
+    const points = entries.reduce((sum, criterion) => sum + criterion.score, 0);
+    const percent = Math.round((points / 24) * 100);
+    const gaps = entries.filter((criterion) => criterion.score <= 1).length;
+    const evidenceNotes = entries.filter((criterion) => criterion.evidence.length > 0).length;
+
+    let label = 'Discovery needed';
+    let health = 'risk';
+    let summary = 'The deal still depends on substantial unknowns. Prioritize the weakest criteria before increasing forecast confidence.';
+    if (percent >= 67) {
+      label = 'Evidence strong';
+      health = 'strong';
+      summary = 'The qualification story is becoming defensible. Pressure-test the remaining weak areas and keep dates, owners, and buyer actions current.';
+    } else if (percent >= 34) {
+      label = 'Gaps exposed';
+      health = 'developing';
+      summary = 'The deal has meaningful evidence, but several assumptions still create execution risk. Turn the weakest scores into explicit next actions.';
+    }
+
+    scoreRing.style.setProperty('--score', String(percent));
+    scoreRing.setAttribute('aria-label', `Deal score: ${percent} percent`);
+    scorePercent.textContent = `${percent}%`;
+    healthLabel.textContent = label;
+    healthDot.dataset.health = health;
+    pointsTotal.textContent = `${points} / 24`;
+    gapTotal.textContent = String(gaps);
+    reviewCopy.textContent = `${summary} ${evidenceNotes} of 8 criteria currently include written evidence.`;
+    saveState();
+  };
+
+  const restoreState = () => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (!stored) return;
+      const state = JSON.parse(stored) as Partial<ScorecardState>;
+      accountInput.value = state.account ?? '';
+      dealInput.value = state.deal ?? '';
+      criterionCards.forEach((card) => {
+        const criterion = state.criteria?.[card.dataset.criterion!];
+        if (!criterion) return;
+        const radio = card.querySelector<HTMLInputElement>(`input[value="${criterion.score}"]`);
+        const evidence = card.querySelector<HTMLTextAreaElement>('textarea');
+        if (radio) radio.checked = true;
+        if (evidence) evidence.value = criterion.evidence ?? '';
+      });
+    } catch { /* Ignore malformed or unavailable storage. */ }
+  };
+
+  const buildSummary = () => {
+    const state = getState();
+    const lines = [
+      `# MEDDPICC Review${state.account ? ` — ${state.account}` : ''}`,
+      state.deal ? `Opportunity: ${state.deal}` : '',
+      `Score: ${pointsTotal.textContent} (${scorePercent.textContent})`,
+      `Signal: ${healthLabel.textContent}`,
+      '',
+      ...criterionCards.flatMap((card) => {
+        const id = card.dataset.criterion!;
+        const criterion = state.criteria[id];
+        return [`## ${card.dataset.title} — ${criterion.score}/3`, criterion.evidence || 'No evidence recorded.', ''];
+      }),
+      '## Review',
+      reviewCopy.textContent ?? '',
+    ];
+    return lines.filter((line, index) => line || index > 1).join('\n');
+  };
+
+  document.querySelectorAll<HTMLInputElement>('input[type="radio"]').forEach((input) => input.addEventListener('change', updateSummary));
+  document.querySelectorAll<HTMLTextAreaElement>('textarea').forEach((input) => input.addEventListener('input', updateSummary));
+  accountInput.addEventListener('input', saveState);
+  dealInput.addEventListener('input', saveState);
+
+  copyButton.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(buildSummary());
+      showToast('MEDDPICC summary copied');
+    } catch { showToast('Copy was blocked by the browser'); }
+  });
+
+  resetButton.addEventListener('click', () => {
+    if (!window.confirm('Reset this locally saved scorecard?')) return;
+    accountInput.value = '';
+    dealInput.value = '';
+    criterionCards.forEach((card) => {
+      card.querySelector<HTMLInputElement>('input[value="0"]')!.checked = true;
+      card.querySelector<HTMLTextAreaElement>('textarea')!.value = '';
+    });
+    try { localStorage.removeItem(STORAGE_KEY); } catch { /* No stored state to remove. */ }
+    updateSummary();
+    showToast('Scorecard reset');
+  });
+
+  restoreState();
+  updateSummary();
+</script>
+
+<style>
+  .score-ring {
+    --ring-color: var(--green);
+    display: grid;
+    width: 7.2rem;
+    height: 7.2rem;
+    place-content: center;
+    justify-items: center;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle, var(--surface) 58%, transparent 60%),
+      conic-gradient(var(--ring-color) calc(var(--score) * 1%), var(--surface-soft) 0);
+    box-shadow: inset 0 0 0 1px var(--line), var(--shadow-sm);
+  }
+
+  .score-ring strong {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.7rem;
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  .score-ring span {
+    color: var(--muted);
+    font-size: 0.58rem;
+    font-weight: 740;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .deal-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    align-items: end;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+    padding: 0.9rem;
+  }
+
+  .deal-health {
+    display: flex;
+    min-width: 12rem;
+    min-height: 2.75rem;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0.8rem;
+    border: 1px solid var(--line);
+    border-radius: 0.65rem;
+    background: var(--bg-elevated);
+  }
+
+  .health-dot {
+    width: 0.52rem;
+    height: 0.52rem;
+    border-radius: 50%;
+    background: #b54b45;
+    box-shadow: 0 0 0 4px color-mix(in srgb, #b54b45 13%, transparent);
+  }
+
+  .health-dot[data-health='developing'] { background: var(--orange); box-shadow: 0 0 0 4px color-mix(in srgb, var(--orange) 13%, transparent); }
+  .health-dot[data-health='strong'] { background: var(--green); box-shadow: 0 0 0 4px color-mix(in srgb, var(--green) 13%, transparent); }
+
+  .deal-health div { display: grid; }
+  .deal-health span { color: var(--faint); font-size: 0.56rem; font-weight: 740; letter-spacing: 0.08em; text-transform: uppercase; }
+  .deal-health strong { font-size: 0.76rem; }
+
+  .criteria-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .criterion-card {
+    padding: 1.2rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .criterion-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .criterion-code {
+    display: grid;
+    width: 2.7rem;
+    height: 2.7rem;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--ink-inverse);
+    background: var(--text);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.15rem;
+  }
+
+  .criterion-heading p {
+    margin: 0;
+    color: var(--faint);
+    font-size: 0.58rem;
+    font-weight: 740;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .criterion-heading h2 {
+    margin: 0.08rem 0 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.55rem;
+    font-weight: 500;
+    letter-spacing: -0.035em;
+  }
+
+  .criterion-prompt {
+    min-height: 3rem;
+    margin: 1rem 0;
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+
+  fieldset { margin: 0 0 1rem; padding: 0; border: 0; }
+  legend { margin-bottom: 0.42rem; color: var(--muted); font-size: 0.65rem; font-weight: 760; letter-spacing: 0.04em; text-transform: uppercase; }
+
+  .score-options {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.35rem;
+  }
+
+  .score-options label { position: relative; }
+  .score-options input { position: absolute; opacity: 0; }
+  .score-options span {
+    display: grid;
+    min-height: 3.4rem;
+    place-content: center;
+    justify-items: center;
+    border: 1px solid var(--line);
+    border-radius: 0.55rem;
+    color: var(--muted);
+    background: var(--bg-elevated);
+    font-size: 0.58rem;
+    font-weight: 680;
+  }
+
+  .score-options span strong { color: var(--text); font-size: 0.88rem; }
+  .score-options input:checked + span { border-color: var(--green); color: var(--text); background: var(--green-soft); }
+  .score-options input:focus-visible + span { outline: 3px solid color-mix(in srgb, var(--focus) 72%, transparent); outline-offset: 2px; }
+
+  .evidence-field textarea {
+    width: 100%;
+    resize: vertical;
+    padding: 0.7rem;
+    border: 1px solid var(--line);
+    border-radius: 0.65rem;
+    color: var(--text);
+    background: var(--bg-elevated);
+    line-height: 1.5;
+  }
+
+  .review-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1.4rem 2rem;
+    margin-top: 1rem;
+    padding: 1.3rem;
+  }
+
+  .review-panel h2 {
+    margin: 0.35rem 0 0.45rem;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 2rem;
+    font-weight: 500;
+    letter-spacing: -0.04em;
+  }
+
+  .review-panel > div > p:last-child { max-width: 48rem; margin: 0; color: var(--muted); font-size: 0.82rem; }
+  .review-stats { display: flex; align-items: center; }
+  .review-stats > div { display: grid; min-width: 7rem; justify-items: center; padding: 0.6rem 1rem; border-left: 1px solid var(--line); }
+  .review-stats strong { font-family: Georgia, 'Times New Roman', serif; font-size: 1.45rem; font-weight: 500; }
+  .review-stats span { color: var(--faint); font-size: 0.58rem; font-weight: 740; letter-spacing: 0.08em; text-transform: uppercase; }
+  .review-actions { display: flex; grid-column: 1 / -1; justify-content: flex-end; gap: 0.5rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+
+  @media (max-width: 820px) {
+    .deal-header,
+    .criteria-grid { grid-template-columns: 1fr; }
+    .review-panel { grid-template-columns: 1fr; }
+    .review-stats { justify-content: flex-start; }
+    .review-stats > div:first-child { border-left: 0; }
+  }
+
+  @media (max-width: 560px) {
+    .score-ring { display: none; }
+    .score-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .review-actions { align-items: stretch; flex-direction: column; }
+  }
+</style>

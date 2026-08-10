@@ -1,0 +1,615 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageIntro from '../../components/PageIntro.astro';
+import { learningCards, learningTopics } from '../../data/learning-cards';
+
+const topicSlug = (topic: string) => topic.toLowerCase().replace(/\s+/g, '-');
+---
+
+<BaseLayout
+  title="Learning Cards — Russ Vaccaro Lab"
+  description="A rotating, no-repeat deck of learning cards for sales, technology, thinking, writing, and career development."
+>
+  <div class="page-shell learning-page">
+    <PageIntro
+      eyebrow="Learning system · Experiment 03"
+      title="Learning cards"
+      description="Small ideas become useful when they return at the right moment. Each visit draws a fresh mix and works through the full deck before starting over."
+    >
+      <div class="deck-summary" aria-label="Learning deck summary">
+        <div>
+          <strong>{learningCards.length}</strong>
+          <span>cards</span>
+        </div>
+        <div>
+          <strong>{learningTopics.length}</strong>
+          <span>topics</span>
+        </div>
+      </div>
+    </PageIntro>
+
+    <section class="learning-controls" aria-label="Learning card controls">
+      <div class="control-left">
+        <div class="field-group topic-field">
+          <label for="topic-filter">Topic</label>
+          <select id="topic-filter">
+            <option value="all">All topics</option>
+            {learningTopics.map((topic) => <option value={topic}>{topic}</option>)}
+          </select>
+        </div>
+        <div class="deck-progress">
+          <span class="deck-progress-dot" aria-hidden="true"></span>
+          <p id="deck-status">Preparing a new mix…</p>
+        </div>
+      </div>
+      <div class="control-actions">
+        <span id="view-count" aria-live="polite">Showing 6 cards</span>
+        <button class="button-secondary" id="show-all" type="button">Show all</button>
+        <button class="button" id="new-mix" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"></path></svg>
+          <span>New mix</span>
+        </button>
+      </div>
+    </section>
+
+    <div class="learning-grid" id="learning-grid">
+      {learningCards.map((card, index) => (
+        <article
+          class="learning-card"
+          data-card-id={card.id}
+          data-topic={card.topic}
+          data-topic-slug={topicSlug(card.topic)}
+          hidden={index >= 6}
+        >
+          <button
+            class="card-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls={`card-detail-${card.id}`}
+          >
+            <span class="card-topline">
+              <span class="topic-mark" aria-hidden="true"></span>
+              <span class="card-topic">{card.topic}</span>
+              <span class="reveal-icon" aria-hidden="true">+</span>
+            </span>
+            <span class="card-copy">
+              <span class="card-title">{card.title}</span>
+              <span class="card-prompt">{card.prompt}</span>
+            </span>
+            <span class="reveal-label">Reveal the model <span aria-hidden="true">↓</span></span>
+          </button>
+          <div class="card-detail" id={`card-detail-${card.id}`} hidden>
+            <div>
+              <p class="detail-label">Working model</p>
+              <p>{card.explanation}</p>
+            </div>
+            <div class="practice-block">
+              <p class="detail-label">Try it</p>
+              <p>{card.practice}</p>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <noscript>
+      <p class="noscript-note">JavaScript is needed to shuffle the deck. The first six cards are shown above.</p>
+    </noscript>
+
+    <section class="how-it-works" aria-labelledby="shuffle-title">
+      <div>
+        <p class="kicker">Under the hood</p>
+        <h2 id="shuffle-title">Random, without the déjà vu.</h2>
+      </div>
+      <div class="shuffle-explanation">
+        <p>The page uses a shuffle bag, not a fresh coin flip for every card. Once a card appears, it leaves the bag until the rest of that topic has had a turn.</p>
+        <p>The remaining order is stored in this browser. Refreshing the page advances the deck instead of accidentally serving the same favorites again.</p>
+      </div>
+    </section>
+  </div>
+
+  <div class="toast-region" aria-live="polite" aria-atomic="true"></div>
+</BaseLayout>
+
+<script>
+  import { learningCards } from '../../data/learning-cards';
+  import { fisherYates, makeShuffleBag } from '../../utils/shuffle';
+
+  const STORAGE_KEY = 'rv-lab-learning-decks-v1';
+  const MIX_SIZE = 6;
+
+  type DeckState = {
+    bags: Record<string, string[]>;
+    lastCardByTopic: Record<string, string>;
+    selectedTopic: string;
+  };
+
+  const grid = document.querySelector<HTMLElement>('#learning-grid')!;
+  const topicFilter = document.querySelector<HTMLSelectElement>('#topic-filter')!;
+  const deckStatus = document.querySelector<HTMLElement>('#deck-status')!;
+  const viewCount = document.querySelector<HTMLElement>('#view-count')!;
+  const showAllButton = document.querySelector<HTMLButtonElement>('#show-all')!;
+  const newMixButton = document.querySelector<HTMLButtonElement>('#new-mix')!;
+  const toastRegion = document.querySelector<HTMLElement>('.toast-region')!;
+  const cardElements = new Map(
+    [...document.querySelectorAll<HTMLElement>('[data-card-id]')]
+      .map((element) => [element.dataset.cardId!, element])
+  );
+
+  const defaultState: DeckState = {
+    bags: {},
+    lastCardByTopic: {},
+    selectedTopic: 'all',
+  };
+
+  const loadState = (): DeckState => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      return stored ? { ...defaultState, ...JSON.parse(stored) } : defaultState;
+    } catch {
+      return defaultState;
+    }
+  };
+
+  let state = loadState();
+  let showAll = false;
+
+  const saveState = () => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch {
+      // The deck still works for this page view if browser storage is blocked.
+    }
+  };
+
+  const showToast = (message: string) => {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    toastRegion.append(toast);
+    window.setTimeout(() => toast.remove(), 2000);
+  };
+
+  const getPool = () => learningCards.filter((card) =>
+    state.selectedTopic === 'all' || card.topic === state.selectedTopic
+  );
+
+  const closeCard = (element: HTMLElement) => {
+    const button = element.querySelector<HTMLButtonElement>('.card-toggle')!;
+    const detail = element.querySelector<HTMLElement>('.card-detail')!;
+    button.setAttribute('aria-expanded', 'false');
+    detail.hidden = true;
+    element.dataset.open = 'false';
+  };
+
+  const displayCards = (ids: string[]) => {
+    cardElements.forEach((element) => {
+      element.hidden = true;
+      closeCard(element);
+    });
+
+    ids.forEach((id) => {
+      const element = cardElements.get(id);
+      if (!element) return;
+      element.hidden = false;
+      grid.append(element);
+      element.classList.remove('card-enter');
+      void element.offsetWidth;
+      element.classList.add('card-enter');
+    });
+
+    viewCount.textContent = `Showing ${ids.length} of ${getPool().length} cards`;
+  };
+
+  const drawMix = () => {
+    const pool = getPool();
+    const poolIds = pool.map((card) => card.id);
+    const validIds = new Set(poolIds);
+    const key = state.selectedTopic;
+    const targetSize = Math.min(MIX_SIZE, pool.length);
+    let bag = (state.bags[key] ?? []).filter((id) => validIds.has(id));
+    const selected: string[] = [];
+    let startedNewRound = false;
+
+    while (selected.length < targetSize) {
+      if (bag.length === 0) {
+        bag = makeShuffleBag(poolIds, selected.at(-1) ?? state.lastCardByTopic[key]);
+        if (selected.length > 0 && pool.length > selected.length) {
+          bag = [
+            ...bag.filter((id) => !selected.includes(id)),
+            ...bag.filter((id) => selected.includes(id)),
+          ];
+        }
+        startedNewRound = true;
+      }
+
+      const next = bag.shift();
+      if (!next) break;
+      if (selected.includes(next) && selected.length < pool.length) {
+        bag.push(next);
+        continue;
+      }
+      selected.push(next);
+    }
+
+    state.bags[key] = bag;
+    state.lastCardByTopic[key] = selected.at(-1) ?? '';
+    saveState();
+    displayCards(selected);
+
+    const remaining = bag.length;
+    deckStatus.textContent = remaining === 0
+      ? 'This round is complete · the next mix starts a fresh shuffle'
+      : `${remaining} ${remaining === 1 ? 'card' : 'cards'} remain before this deck repeats`;
+    if (startedNewRound) showToast('Fresh shuffle started');
+  };
+
+  const displayAll = () => {
+    const ids = fisherYates(getPool().map((card) => card.id));
+    displayCards(ids);
+    deckStatus.textContent = 'Full deck view · order shuffled for this page';
+  };
+
+  const setShowAll = (next: boolean) => {
+    showAll = next;
+    showAllButton.textContent = showAll ? 'Show 6' : 'Show all';
+    newMixButton.querySelector('span')!.textContent = showAll ? 'Shuffle all' : 'New mix';
+    if (showAll) displayAll();
+    else drawMix();
+  };
+
+  cardElements.forEach((element) => {
+    const button = element.querySelector<HTMLButtonElement>('.card-toggle')!;
+    const detail = element.querySelector<HTMLElement>('.card-detail')!;
+    button.addEventListener('click', () => {
+      const willOpen = detail.hidden;
+      button.setAttribute('aria-expanded', String(willOpen));
+      detail.hidden = !willOpen;
+      element.dataset.open = String(willOpen);
+    });
+  });
+
+  topicFilter.value = state.selectedTopic;
+  topicFilter.addEventListener('change', () => {
+    state.selectedTopic = topicFilter.value;
+    saveState();
+    showAll = false;
+    showAllButton.textContent = 'Show all';
+    newMixButton.querySelector('span')!.textContent = 'New mix';
+    drawMix();
+  });
+
+  showAllButton.addEventListener('click', () => setShowAll(!showAll));
+  newMixButton.addEventListener('click', () => showAll ? displayAll() : drawMix());
+
+  drawMix();
+</script>
+
+<style>
+  .deck-summary {
+    display: flex;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .deck-summary > div {
+    display: grid;
+    min-width: 5.8rem;
+    justify-items: center;
+    padding: 0.7rem 0.9rem;
+  }
+
+  .deck-summary > div + div { border-left: 1px solid var(--line); }
+
+  .deck-summary strong {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.65rem;
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  .deck-summary span {
+    margin-top: 0.2rem;
+    color: var(--muted);
+    font-size: 0.6rem;
+    font-weight: 720;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .learning-controls {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.2rem;
+    margin-bottom: 1.2rem;
+    padding: 0.85rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--surface) 72%, transparent);
+  }
+
+  .control-left,
+  .control-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .topic-field { width: 13rem; }
+
+  .deck-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-top: 1.15rem;
+  }
+
+  .deck-progress-dot {
+    width: 0.42rem;
+    height: 0.42rem;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: var(--blue);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--blue) 12%, transparent);
+  }
+
+  .deck-progress p,
+  #view-count {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.68rem;
+  }
+
+  #view-count { margin-right: 0.25rem; }
+
+  .learning-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+    gap: 1rem;
+  }
+
+  .learning-card {
+    --topic-color: var(--green);
+    position: relative;
+    overflow: hidden;
+    min-height: 23rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    transition: border 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  }
+
+  .learning-card[data-topic-slug='technical-fluency'] { --topic-color: var(--blue); }
+  .learning-card[data-topic-slug='thinking'] { --topic-color: #7a62ad; }
+  .learning-card[data-topic-slug='writing'] { --topic-color: var(--orange); }
+  .learning-card[data-topic-slug='career'] { --topic-color: #a08326; }
+
+  .learning-card:hover {
+    border-color: color-mix(in srgb, var(--topic-color) 48%, var(--line));
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-3px);
+  }
+
+  .learning-card[hidden] { display: none; }
+
+  .learning-card::before {
+    position: absolute;
+    inset: 0 0 auto;
+    height: 0.27rem;
+    background: var(--topic-color);
+    content: '';
+  }
+
+  .card-enter { animation: card-in 320ms ease both; }
+
+  @keyframes card-in {
+    from { opacity: 0; transform: translateY(0.75rem); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-toggle {
+    display: flex;
+    width: 100%;
+    min-height: 23rem;
+    flex-direction: column;
+    padding: 1.25rem;
+    border: 0;
+    color: var(--text);
+    background: transparent;
+    text-align: left;
+  }
+
+  .card-topline {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .topic-mark {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--topic-color);
+  }
+
+  .card-topic {
+    color: var(--muted);
+    font-size: 0.65rem;
+    font-weight: 750;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .reveal-icon {
+    display: grid;
+    width: 1.8rem;
+    height: 1.8rem;
+    margin-left: auto;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1;
+    transition: transform 180ms ease, color 180ms ease, background 180ms ease;
+  }
+
+  .learning-card[data-open='true'] .reveal-icon {
+    color: var(--ink-inverse);
+    background: var(--text);
+    transform: rotate(45deg);
+  }
+
+  .card-copy {
+    display: grid;
+    gap: 1rem;
+    margin-block: auto;
+    padding: 3rem 0;
+  }
+
+  .card-title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(1.9rem, 3vw, 2.5rem);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  .card-prompt {
+    color: var(--muted);
+    font-size: 0.87rem;
+    line-height: 1.5;
+  }
+
+  .reveal-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--line);
+    color: var(--faint);
+    font-size: 0.65rem;
+    font-weight: 680;
+  }
+
+  .card-detail {
+    display: grid;
+    gap: 1rem;
+    padding: 0 1.25rem 1.25rem;
+    animation: detail-in 180ms ease-out both;
+  }
+
+  .card-detail[hidden] { display: none; }
+
+  @keyframes detail-in {
+    from { opacity: 0; transform: translateY(-0.35rem); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .learning-card[data-open='true'] .card-toggle {
+    min-height: auto;
+    padding-bottom: 0.75rem;
+  }
+
+  .learning-card[data-open='true'] .card-copy {
+    margin: 0;
+    padding: 2rem 0;
+  }
+
+  .learning-card[data-open='true'] .reveal-label { display: none; }
+
+  .detail-label {
+    margin: 0 0 0.35rem;
+    color: var(--topic-color);
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  .card-detail > div > p:last-child {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.79rem;
+    line-height: 1.52;
+  }
+
+  .practice-block {
+    padding: 0.8rem;
+    border: 1px solid color-mix(in srgb, var(--topic-color) 25%, var(--line));
+    border-radius: var(--radius-sm);
+    background: color-mix(in srgb, var(--topic-color) 7%, var(--bg-elevated));
+  }
+
+  .noscript-note {
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    color: var(--muted);
+    background: var(--surface);
+    font-size: 0.8rem;
+  }
+
+  .how-it-works {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: clamp(2rem, 8vw, 7rem);
+    margin-top: clamp(5rem, 10vw, 9rem);
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .how-it-works h2 {
+    max-width: 24rem;
+    margin: 0.4rem 0 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 500;
+    letter-spacing: -0.045em;
+    line-height: 1;
+  }
+
+  .shuffle-explanation {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .shuffle-explanation p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+
+  @media (max-width: 920px) {
+    .learning-controls {
+      align-items: stretch;
+      flex-direction: column;
+    }
+    .control-left,
+    .control-actions { justify-content: space-between; }
+    .learning-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 650px) {
+    .deck-summary { display: none; }
+    .control-left,
+    .control-actions {
+      align-items: stretch;
+      flex-direction: column;
+    }
+    .topic-field { width: 100%; }
+    .deck-progress { padding-top: 0; }
+    #view-count { text-align: center; }
+    .learning-grid { grid-template-columns: 1fr; }
+    .how-it-works { grid-template-columns: 1fr; }
+    .shuffle-explanation { grid-template-columns: 1fr; }
+  }
+</style>
