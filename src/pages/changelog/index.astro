@@ -70,14 +70,13 @@ const entries = [
     <PageIntro
       eyebrow="Build in public"
       title="Changelog"
-      description="A short record of what shipped, why it changed, and how the lab is becoming more capable without becoming unnecessarily complicated."
+      description="A short record of what shipped, why it changed, and how the lab is becoming more capable"
     />
 
     <section class="timeline" aria-label="Lab changelog">
       {entries.map((entry) => (
         <article class="timeline-entry">
           <div class="entry-meta">
-            <time>{entry.date}</time>
             <span>{entry.version}</span>
           </div>
           <div class="entry-body">
