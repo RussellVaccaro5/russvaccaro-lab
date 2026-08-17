@@ -5,49 +5,43 @@ import StatusBadge from '../../components/StatusBadge.astro';
 
 const entries = [
   {
-    date: 'August 9, 2026',
     version: '0.4.0',
     title: 'Scratchpad becomes daily pages',
     summary: 'Turned the single-note scratchpad into a dated local writing system with a complete portable export.',
     changes: [
       'Added previous, next, today, and calendar navigation for daily pages.',
       'Stored each date independently while keeping all content private to the browser.',
-      'Added automatic migration of the original scratchpad into today’s daily page.',
       'Changed Markdown download to one chronological dump of every saved daily page.',
     ],
     status: 'Shipped' as const,
   },
   {
-    date: 'August 9, 2026',
     version: '0.3.0',
-    title: 'Four source folders, one canonical lab',
-    summary: 'Audited the four overlapping Astro packages and retained the most complete, cohesive implementation as the publishable source.',
+    title: 'Four source folders, one site',
+    summary: 'Audited the four overlapping Astro packages and retained the most cohesive implementation as the publishable source.',
     changes: [
       'Kept all six working browser experiments in one shared design system.',
-      'Excluded unfinished starter-blog pages, Lorem ipsum content, and duplicate root-level artifacts.',
+      'Deleted unfinished starter-blog pages, Lorem ipsum content, and duplicate root-level artifacts.',
       'Added a site-specific social preview card and complete Open Graph and X metadata.',
       'Verified all 10 static HTML routes with zero Astro diagnostics.',
     ],
     status: 'Shipped' as const,
   },
   {
-    date: 'August 8, 2026',
     version: '0.2.0',
-    title: 'The lab becomes a system',
+    title: 'The lab develops further',
     summary: 'Merged the original site foundation with three working browser prototypes and made the build progression visible.',
     changes: [
       'Added the Reading Explorer, sales hub, MEDDPICC Scorecard, and Account POV Builder.',
-      'Integrated the Interview Drill, Local Scratchpad, and randomized Learning Cards.',
-      'Added shared experiment cards with status, technologies, learning, and the next planned improvement.',
+      'Added shared experiment cards with status, technologies, learning, and future planned improvement.',
       'Kept every interactive tool static-hosting friendly with browser-only persistence.',
     ],
     status: 'Shipped' as const,
   },
   {
-    date: 'August 8, 2026',
     version: '0.1.0',
     title: 'First complete interaction loops',
-    summary: 'Built three narrow tools that work without accounts, APIs, databases, or server-side code.',
+    summary: 'Built three rough tools that work without accounts, APIs, databases, or server-side code.',
     changes: [
       'Interview Drill: 36 prompts, filters, timers, follow-up coaching, and local progress.',
       'Local Scratchpad: auto-save, quick structures, live counts, copying, clearing, and Markdown export.',
@@ -56,13 +50,11 @@ const entries = [
     status: 'Shipped' as const,
   },
   {
-    date: 'August 7, 2026',
     version: '0.0.1',
     title: 'Astro playground established',
     summary: 'Defined the lab as a separate Vercel-deployed Astro project connected to lab.russvaccaro.com.',
     changes: [
       'Chose static Astro as the default architecture.',
-      'Set the rule: add complexity only after a small experiment proves it needs the next layer.',
       'Linked the lab back to russvaccaro.com instead of creating another About page.',
     ],
     status: 'Prototype' as const,
@@ -78,14 +70,13 @@ const entries = [
     <PageIntro
       eyebrow="Build in public"
       title="Changelog"
-      description="A short record of what shipped, why it changed, and how the lab is becoming more capable without becoming unnecessarily complicated."
+      description="A short record of what shipped, why it changed, and how the lab is becoming more capable"
     />
 
     <section class="timeline" aria-label="Lab changelog">
       {entries.map((entry) => (
         <article class="timeline-entry">
           <div class="entry-meta">
-            <time>{entry.date}</time>
             <span>{entry.version}</span>
           </div>
           <div class="entry-body">
