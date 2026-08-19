@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import PageIntro from '../../../components/PageIntro.astro';
-import discoveryQuestions from '../../../data/discovery-questions.json';
+import { discoveryQuestions } from '../../../data/discovery-questions';
 ---
 
 <BaseLayout
@@ -79,7 +79,7 @@ import discoveryQuestions from '../../../data/discovery-questions.json';
 </BaseLayout>
 
 <script>
-  import discoveryQuestions from '../../../data/discovery-questions.json';
+  import { discoveryQuestions } from '../../../data/discovery-questions';
 
   const STORAGE_KEY = 'rv-lab-pov-builder-v1';
   const accountInput = document.querySelector<HTMLInputElement>('#account')!;

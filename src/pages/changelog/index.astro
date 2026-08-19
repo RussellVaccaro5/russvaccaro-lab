@@ -5,6 +5,17 @@ import StatusBadge from '../../components/StatusBadge.astro';
 
 const entries = [
   {
+    version: '0.5.0',
+    title: 'Structured content gets a safer workflow',
+    summary: 'Added a private, GitHub-authenticated editor for maintaining the lab’s data without hand-editing JSON.',
+    changes: [
+      'Added guided forms, search, previews, import/export, and live validation for all four content datasets.',
+      'Kept published content in typed, build-validated JSON files.',
+      'Added review-first publishing that opens a GitHub pull request instead of changing production directly.',
+    ],
+    status: 'Shipped' as const,
+  },
+  {
     version: '0.4.0',
     title: 'Scratchpad becomes daily pages',
     summary: 'Turned the single-note scratchpad into a dated local writing system with a complete portable export.',

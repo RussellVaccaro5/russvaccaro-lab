@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageIntro from '../../components/PageIntro.astro';
-import books from '../../data/books.json';
+import { books } from '../../data/books';
 
 const topics = [...new Set(books.map((book) => book.topic))].sort();
 const statuses = ['Reading', 'Queue', 'Finished'];
