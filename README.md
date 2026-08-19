@@ -59,14 +59,25 @@ All four datasets are validated when Astro imports them during the production bu
 
 ## Protected content editor
 
-The repository includes a form-based editor at `/editor/` with search, create, duplicate, delete, live validation, JSON import/export, previews, and GitHub pull-request publishing. Keep the public lab and private editor as separate Vercel projects connected to the same repository:
 
-1. Leave `PUBLIC_EDITOR_ENABLED` unset on the public project. The `/editor/` route displays only an unavailable message there, and publishing remains disabled.
-2. Set `PUBLIC_EDITOR_ENABLED=true` and `EDITOR_PUBLISH_ENABLED=true` on the private editor project.
-3. Enable Vercel Deployment Protection for every environment in which the editor is available.
-4. Install a narrowly scoped GitHub App on this repository with **Contents: read/write** and **Pull requests: read/write** repository permissions.
-5. Configure the private project with `GITHUB_APP_ID`, `GITHUB_APP_PRIVATE_KEY`, `GITHUB_APP_INSTALLATION_ID`, `GITHUB_REPOSITORY_OWNER`, and `GITHUB_REPOSITORY_NAME`. `GITHUB_BASE_BRANCH` is optional and defaults to `main`.
+The repository includes a form-based editor at `/editor/` with search, create, duplicate, delete, live validation, JSON import/export, previews, and GitHub pull-request publishing. It runs in the existing Vercel project: visit `https://lab.russvaccaro.com/editor/`, sign in with an approved GitHub account, make changes, and create a pull request.
 
-Do not expose the GitHub App private key through a `PUBLIC_` variable. The publishing function reads credentials only on the server, creates a timestamped branch, commits changed JSON files, and opens a pull request; it never merges directly.
+### One-time GitHub App setup
+
+1. Create or update a GitHub App owned by the account that owns this repository.
+2. Set its callback URL to `https://lab.russvaccaro.com/api/auth/callback` and enable user authorization through the app.
+3. Grant only **Contents: read/write** and **Pull requests: read/write** repository permissions, then install it only on this repository.
+4. Generate a private key and note the App ID, client ID, client secret, and installation ID.
+5. Add these encrypted environment variables to the existing Vercel project:
+   - `EDITOR_SITE_URL=https://lab.russvaccaro.com`
+   - `EDITOR_ALLOWED_GITHUB_LOGINS=your-github-username` (comma-separated for more than one editor)
+   - `EDITOR_SESSION_SECRET=` followed by a random value of at least 32 characters (generate one with `openssl rand -hex 32`)
+   - `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `GITHUB_APP_ID`, `GITHUB_APP_PRIVATE_KEY`, and `GITHUB_APP_INSTALLATION_ID`
+   - `GITHUB_REPOSITORY_OWNER` and `GITHUB_REPOSITORY_NAME`
+   - Optional `GITHUB_BASE_BRANCH` (defaults to `main`)
+6. Redeploy once so Vercel applies the variables.
+
+Authentication uses an eight-hour, signed, HTTP-only cookie. Every publish request verifies that session server-side before using the GitHub App to create a timestamped branch, commit changed JSON files, and open a pull request. It never merges directly. Do not put authentication or GitHub secrets in variables beginning with `PUBLIC_`.
+=======
 
 See `CONSOLIDATION_REPORT.md` for the source-folder comparison, intentional repetition, rejected conflicts, and merge decisions.

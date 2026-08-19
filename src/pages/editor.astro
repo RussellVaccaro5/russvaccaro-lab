@@ -6,15 +6,26 @@ import discoveryData from '../data/discovery-questions.json';
 import interviewData from '../data/interview-questions.json';
 import learningData from '../data/learning-cards.json';
 
-const editorEnabled = import.meta.env.PUBLIC_EDITOR_ENABLED === 'true';
 const initialData = { books: booksData, interview: interviewData, learning: learningData, discovery: discoveryData };
 ---
 
 <BaseLayout title="Content editor — Russ Vaccaro Lab" description="Private structured-content editor." robots="noindex, nofollow, noarchive">
-  {editorEnabled ? (
-    <div class="editor-shell">
-      <PageIntro eyebrow="Private workspace" title="Content editor" description="Create, review, validate, export, and publish the lab’s structured content without editing source files." status="Protected deployment" />
-
+  <div id="auth-loading" class="auth-gate page-shell" aria-live="polite">
+    <p class="eyebrow">Private workspace</p><h1>Checking editor access…</h1>
+  </div>
+  <section id="auth-required" class="auth-gate page-shell" hidden aria-labelledby="sign-in-title">
+    <p class="eyebrow">Private workspace</p>
+    <h1 id="sign-in-title">Sign in to edit lab content.</h1>
+    <p>Use the approved GitHub account to open the editor and create reviewable pull requests.</p>
+    <p id="auth-error" class="form-errors" hidden></p>
+    <a class="button-primary" href="/api/auth/login">Continue with GitHub</a>
+  </section>
+  <div id="editor-app" class="editor-shell" hidden>
+      <div class="editor-heading">
+        <PageIntro eyebrow="Private workspace" title="Content editor" description="Create, review, validate, export, and publish the lab’s structured content without editing source files." status="GitHub authenticated" />
+        <div class="user-menu tool-panel"><img id="user-avatar" alt="" /><span>Signed in as <strong id="user-login"></strong></span><button class="text-button" id="sign-out" type="button">Sign out</button></div>
+      </div>
+=======
       <div class="editor-toolbar tool-panel">
         <div class="field-group dataset-field">
           <label for="dataset">Dataset</label>
@@ -81,15 +92,12 @@ const initialData = { books: booksData, interview: interviewData, learning: lear
           <div class="dialog-actions"><button class="button-secondary" value="cancel">Cancel</button><button class="button-primary" id="confirm-publish" value="default">Create pull request</button></div>
         </form>
       </dialog>
-    </div>
-  ) : (
-    <div class="page-shell unavailable"><p class="eyebrow">Not available</p><h1>Editor access is disabled.</h1><p>This workspace is only built in the protected editor deployment.</p><a class="button-secondary" href="/">Return to the lab</a></div>
-  )}
+  </div>
 </BaseLayout>
 
-{editorEnabled && <script is:inline define:vars={{ initialData }}>window.__EDITOR_DATA__ = initialData;</script>}
+<script is:inline define:vars={{ initialData }}>window.__EDITOR_DATA__ = initialData;</script>
 
-{editorEnabled && <script>
+<script>
   import { getValidationIssues } from '../data/validation';
   import { bookStatuses, interviewCategories, interviewDifficulties, learningTopics } from '../data/schema';
 
@@ -230,11 +238,42 @@ const initialData = { books: booksData, interview: interviewData, learning: lear
     finally { submitter.disabled = false; submitter.textContent = 'Create pull request'; }
   });
   window.addEventListener('beforeunload', (event) => { if (dirty) event.preventDefault(); });
-  selectedId = String(datasets.books[0]?.id || ''); render();
-</script>}
+  async function checkAuthentication() {
+    const loading = $('#auth-loading');
+    const required = $('#auth-required');
+    const app = $('#editor-app');
+    try {
+      const response = await fetch('/api/auth/session', { headers: { accept: 'application/json' } });
+      const result = await response.json();
+      loading.setAttribute('hidden', '');
+      if (!result.authenticated) {
+        required.removeAttribute('hidden');
+        const message = new URLSearchParams(location.search).get('auth_error');
+        if (message) { $('#auth-error').textContent = message; $('#auth-error').removeAttribute('hidden'); history.replaceState({}, '', '/editor/'); }
+        return;
+      }
+      $<HTMLImageElement>('#user-avatar').src = result.user.avatarUrl || '';
+      $('#user-login').textContent = result.user.login;
+      app.removeAttribute('hidden');
+      selectedId = String(datasets.books[0]?.id || ''); render();
+    } catch {
+      loading.setAttribute('hidden', ''); required.removeAttribute('hidden');
+      $('#auth-error').textContent = 'Editor authentication is unavailable. Please try again.'; $('#auth-error').removeAttribute('hidden');
+    }
+  }
+  $('#sign-out').addEventListener('click', async () => { await fetch('/api/auth/logout', { method: 'POST' }); location.assign('/editor/'); });
+  checkAuthentication();
+</script>
 
 <style>
   .editor-shell { width: min(1540px, calc(100% - 2rem)); margin: 0 auto; padding: 3rem 0 5rem; }
+  .editor-heading { position: relative; }
+  .user-menu { position: absolute; top: 0; right: 0; display: flex; align-items: center; gap: .65rem; padding: .55rem .7rem; font-size: .82rem; }
+  .user-menu img { width: 2rem; height: 2rem; border-radius: 50%; background: var(--color-surface-soft); }
+  .auth-gate { max-width: 680px; padding-block: clamp(5rem, 15vh, 10rem); }
+  .auth-gate h1 { font-family: Georgia, serif; font-size: clamp(2.2rem, 7vw, 4.5rem); margin: .5rem 0 1rem; }
+  .auth-gate p:not(.eyebrow) { color: var(--color-text-muted); font-size: 1.08rem; line-height: 1.65; margin-bottom: 1.5rem; }
+=======
   .editor-toolbar { display: grid; grid-template-columns: minmax(180px, .6fr) minmax(240px, 1fr) auto; gap: 1rem; align-items: end; margin: 1.5rem 0 .75rem; padding: 1rem; }
   .toolbar-actions, .entry-actions, .dialog-actions { display: flex; gap: .6rem; flex-wrap: wrap; }
   .editor-status { display: flex; justify-content: space-between; gap: 1rem; color: var(--color-text-muted); font-size: .88rem; margin: 0 0 .75rem; }
@@ -271,7 +310,7 @@ const initialData = { books: booksData, interview: interviewData, learning: lear
   .dialog-card h2 { margin: .2rem 0; }
   .dialog-actions { justify-content: flex-end; }
   .form-errors { color: var(--color-accent-orange); padding: .75rem; border: 1px solid currentColor; border-radius: var(--radius-small); }
-  .unavailable { padding-block: 6rem; text-align: center; }
   @media (max-width: 1100px) { .editor-grid { grid-template-columns: 240px 1fr; } .preview-panel { grid-column: 2; } }
-  @media (max-width: 760px) { .editor-shell { width: min(100% - 1rem, 1540px); padding-top: 1.5rem; } .editor-toolbar, .editor-grid { grid-template-columns: 1fr; } .toolbar-actions > * { flex: 1; } .entry-browser { position: static; max-height: 360px; } .preview-panel { grid-column: auto; } #entry-form { grid-template-columns: 1fr; } .editor-field { grid-column: 1; } .form-heading { display: grid; } }
+  @media (max-width: 760px) { .editor-shell { width: min(100% - 1rem, 1540px); padding-top: 1.5rem; } .user-menu { position: static; width: fit-content; margin: 0 0 1rem auto; } .editor-toolbar, .editor-grid { grid-template-columns: 1fr; } .toolbar-actions > * { flex: 1; } .entry-browser { position: static; max-height: 360px; } .preview-panel { grid-column: auto; } #entry-form { grid-template-columns: 1fr; } .editor-field { grid-column: 1; } .form-heading { display: grid; } }
+=======
 </style>

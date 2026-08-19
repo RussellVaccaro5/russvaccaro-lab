@@ -1,4 +1,5 @@
 import { createSign } from 'node:crypto';
+import { requireSession } from '../lib/auth.mjs';
 
 const paths = {
   books: 'src/data/books.json',
@@ -52,7 +53,7 @@ function validatePayload(body) {
 
 export default async function handler(request, response) {
   if (request.method !== 'POST') return json(response, 405, { error: 'Method not allowed.' });
-  if (process.env.EDITOR_PUBLISH_ENABLED !== 'true') return json(response, 404, { error: 'Publishing is disabled for this deployment.' });
+  if (!requireSession(request, response)) return;
   const error = validatePayload(request.body);
   if (error) return json(response, 400, { error });
 
