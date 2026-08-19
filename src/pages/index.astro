@@ -97,12 +97,15 @@ const experiments = [
           <span>Browser first</span>
           <span>No accounts</span>
         </div>
-        <a class="main-home-link" href="https://russvaccaro.com">Visit russvaccaro.com <span aria-hidden="true">↗</span></a>
+        <div class="hero-actions">
+          <a class="button" href="#experiments">Explore the tools <span aria-hidden="true">↓</span></a>
+          <a class="main-home-link" href="https://russvaccaro.com">Visit russvaccaro.com <span aria-hidden="true">↗</span></a>
+        </div>
       </div>
     </div>
   </section>
 
-  <section class="projects-section shell" aria-labelledby="projects-title">
+  <section class="projects-section shell" id="experiments" aria-labelledby="projects-title">
     <div class="section-heading">
       <div>
         <p class="kicker">Current experiments</p>
@@ -150,7 +153,6 @@ const experiments = [
     display: inline-flex;
     align-items: center;
     gap: 0.45rem;
-    margin-top: 1.25rem;
     color: var(--text);
     font-size: 0.78rem;
     font-weight: 720;
@@ -158,6 +160,18 @@ const experiments = [
   }
 
   .main-home-link:hover { color: var(--green); }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+    margin-top: 1.5rem;
+  }
+
+  #experiments {
+    scroll-margin-top: 6rem;
+  }
 
   @media (max-width: 760px) {
     .experiment-grid { grid-template-columns: 1fr; }

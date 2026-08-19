@@ -90,4 +90,19 @@ const isActive = (href: string) =>
     menuToggle.setAttribute('aria-expanded', String(willOpen));
     menuToggle.setAttribute('aria-label', `${willOpen ? 'Close' : 'Open'} navigation`);
   });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape' || !mobileNav || mobileNav.hidden) return;
+    mobileNav.hidden = true;
+    menuToggle?.setAttribute('aria-expanded', 'false');
+    menuToggle?.setAttribute('aria-label', 'Open navigation');
+    menuToggle?.focus();
+  });
+
+  window.matchMedia('(min-width: 921px)').addEventListener('change', (event) => {
+    if (!event.matches || !mobileNav) return;
+    mobileNav.hidden = true;
+    menuToggle?.setAttribute('aria-expanded', 'false');
+    menuToggle?.setAttribute('aria-label', 'Open navigation');
+  });
 </script>
