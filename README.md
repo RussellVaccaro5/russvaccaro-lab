@@ -48,11 +48,25 @@ npm run preview
 ## Edit content
 
 - Reading catalog: `src/data/books.json`
-- Interview prompts: `src/data/interview-questions.ts`
-- Learning cards: `src/data/learning-cards.ts`
+- Interview prompts: `src/data/interview-questions.json`
+- Learning cards: `src/data/learning-cards.json`
 - Account POV prompts: `src/data/discovery-questions.json`
 - Public build record: `src/pages/changelog/index.astro`
 
 Keep IDs stable after publishing so saved browser progress continues to map to the correct questions and cards.
+
+All four datasets are validated when Astro imports them during the production build. Allowed values and TypeScript interfaces live in `src/data/schema.ts`; validation rules live in `src/data/validation.ts`.
+
+## Protected content editor
+
+The repository includes a form-based editor at `/editor/` with search, create, duplicate, delete, live validation, JSON import/export, previews, and GitHub pull-request publishing. Keep the public lab and private editor as separate Vercel projects connected to the same repository:
+
+1. Leave `PUBLIC_EDITOR_ENABLED` unset on the public project. The `/editor/` route displays only an unavailable message there, and publishing remains disabled.
+2. Set `PUBLIC_EDITOR_ENABLED=true` and `EDITOR_PUBLISH_ENABLED=true` on the private editor project.
+3. Enable Vercel Deployment Protection for every environment in which the editor is available.
+4. Install a narrowly scoped GitHub App on this repository with **Contents: read/write** and **Pull requests: read/write** repository permissions.
+5. Configure the private project with `GITHUB_APP_ID`, `GITHUB_APP_PRIVATE_KEY`, `GITHUB_APP_INSTALLATION_ID`, `GITHUB_REPOSITORY_OWNER`, and `GITHUB_REPOSITORY_NAME`. `GITHUB_BASE_BRANCH` is optional and defaults to `main`.
+
+Do not expose the GitHub App private key through a `PUBLIC_` variable. The publishing function reads credentials only on the server, creates a timestamped branch, commits changed JSON files, and opens a pull request; it never merges directly.
 
 See `CONSOLIDATION_REPORT.md` for the source-folder comparison, intentional repetition, rejected conflicts, and merge decisions.

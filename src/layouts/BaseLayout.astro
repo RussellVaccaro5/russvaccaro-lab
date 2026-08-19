@@ -6,9 +6,10 @@ import '../styles/global.css';
 interface Props {
   title: string;
   description: string;
+  robots?: string;
 }
 
-const { title, description } = Astro.props;
+const { title, description, robots } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const socialImageURL = new URL('/og.png', Astro.site);
 ---
@@ -20,6 +21,7 @@ const socialImageURL = new URL('/og.png', Astro.site);
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
+    {robots && <meta name="robots" content={robots} />}
     <meta name="theme-color" content="#f2efe6" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#141714" media="(prefers-color-scheme: dark)" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />

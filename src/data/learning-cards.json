@@ -1,0 +1,642 @@
+[
+  {
+    "id": "sales-cost-of-inaction",
+    "topic": "Sales craft",
+    "title": "Cost of inaction",
+    "prompt": "Why is quantified pain still insufficient without a decision timeline?",
+    "explanation": "A problem can be expensive and remain tolerated. A compelling event connects the impact to a date or condition that changes the consequence of waiting.",
+    "practice": "For one live deal, write the consequence, owner, and date in a single sentence. Mark every unverified word."
+  },
+  {
+    "id": "sales-champion-test",
+    "topic": "Sales craft",
+    "title": "Champion test",
+    "prompt": "What separates a friendly coach from a champion?",
+    "explanation": "A champion has influence, a personal reason to act, and a history of taking risk on your behalf. Access and action are stronger evidence than enthusiasm.",
+    "practice": "Ask for one reasonable action that requires influence, then watch what happens."
+  },
+  {
+    "id": "sales-discovery-hypothesis",
+    "topic": "Sales craft",
+    "title": "Hypothesis-led discovery",
+    "prompt": "How can preparation make a discovery call less scripted?",
+    "explanation": "Good preparation produces informed hypotheses, not a longer questionnaire. A hypothesis gives the buyer something concrete to correct and lets the conversation find signal faster.",
+    "practice": "Bring three “we often see…” hypotheses to your next first call and retire any that do not survive contact."
+  },
+  {
+    "id": "sales-multi-threading",
+    "topic": "Sales craft",
+    "title": "Multi-threading",
+    "prompt": "Why is adding contacts not the same as multi-threading?",
+    "explanation": "A contact list is not a decision network. Useful multi-threading maps distinct roles, incentives, influence, and risks across the buying process.",
+    "practice": "Label each stakeholder by decision role and write the unique question only that person can answer."
+  },
+  {
+    "id": "sales-give-get",
+    "topic": "Sales craft",
+    "title": "Give / get",
+    "prompt": "What makes a concession productive?",
+    "explanation": "A concession should purchase something that improves the deal: scope clarity, timing, term, referenceability, access, or reduced risk. Unilateral concessions teach the other side to wait.",
+    "practice": "Before the next negotiation, list three tradable items and the reciprocal value required for each."
+  },
+  {
+    "id": "sales-mutual-plan",
+    "topic": "Sales craft",
+    "title": "Mutual action plan",
+    "prompt": "When does a close plan become genuinely mutual?",
+    "explanation": "It becomes mutual when the buyer uses it to manage their own decision and implementation—not when they politely accept the seller’s timeline.",
+    "practice": "Rewrite one milestone in customer language: their owner, decision, evidence, and consequence."
+  },
+  {
+    "id": "technical-dns-resolution",
+    "topic": "Technical fluency",
+    "title": "DNS resolution",
+    "prompt": "What happens between typing a domain and reaching its server?",
+    "explanation": "The browser checks local caches, a recursive resolver follows the DNS hierarchy to an authoritative answer, and the returned address lets the client begin a network connection.",
+    "practice": "Use dig on one domain and identify the recursive resolver, record type, TTL, and authoritative nameservers."
+  },
+  {
+    "id": "technical-tls-handshake",
+    "topic": "Technical fluency",
+    "title": "TLS handshake",
+    "prompt": "What is the handshake trying to establish?",
+    "explanation": "It authenticates the server, agrees on cryptographic parameters, and derives short-lived session keys before application data is exchanged.",
+    "practice": "Explain TLS to a buyer once in technical language and once as a trust-and-privacy outcome."
+  },
+  {
+    "id": "technical-reverse-proxy",
+    "topic": "Technical fluency",
+    "title": "Reverse proxy",
+    "prompt": "Why put an intermediary in front of an origin server?",
+    "explanation": "A reverse proxy can terminate connections, enforce security, cache content, balance traffic, hide origin details, and apply policy close to users.",
+    "practice": "Draw the request path for direct-to-origin traffic and proxied traffic. Label where policy can be applied."
+  },
+  {
+    "id": "technical-api-contract",
+    "topic": "Technical fluency",
+    "title": "API contract",
+    "prompt": "Why is an API more than an endpoint?",
+    "explanation": "An API is a behavioral contract: schemas, authentication, errors, rate limits, idempotency, versioning, and expectations about change all shape whether an integration is dependable.",
+    "practice": "Open one API reference and find how it documents errors, limits, and backward compatibility."
+  },
+  {
+    "id": "technical-observability",
+    "topic": "Technical fluency",
+    "title": "Observability",
+    "prompt": "How is observability different from having many dashboards?",
+    "explanation": "Observability is the ability to infer internal system state from outputs. Tools help, but useful telemetry, shared context, and questions you can answer are the real system.",
+    "practice": "Take one user complaint and name the logs, metrics, and traces that would narrow its cause."
+  },
+  {
+    "id": "technical-zero-trust",
+    "topic": "Technical fluency",
+    "title": "Zero trust",
+    "prompt": "What does “never trust, always verify” miss?",
+    "explanation": "Zero trust is an architecture for continuously evaluating identity, device, resource, and context while limiting access. It is not a product or a demand to distrust every request equally.",
+    "practice": "Pick one internal application and define its user, device, policy decision, enforcement point, and minimum access."
+  },
+  {
+    "id": "thinking-inversion",
+    "topic": "Thinking",
+    "title": "Inversion",
+    "prompt": "What becomes visible when you ask how a plan could fail?",
+    "explanation": "Working backward from failure reveals hidden dependencies, fragile assumptions, and behaviors to avoid. It complements—but does not replace—planning toward success.",
+    "practice": "Pre-mortem one important meeting: list three failure modes and one prevention for each."
+  },
+  {
+    "id": "thinking-base-rates",
+    "topic": "Thinking",
+    "title": "Base rates",
+    "prompt": "Why should the outside view come before the special story?",
+    "explanation": "Base rates anchor a forecast in how similar cases usually turn out. The inside view can then adjust that anchor with specific, defensible evidence.",
+    "practice": "Forecast one deal from stage conversion and cycle data before adding account-specific judgment."
+  },
+  {
+    "id": "thinking-second-order",
+    "topic": "Thinking",
+    "title": "Second-order effects",
+    "prompt": "What happens after the immediate result?",
+    "explanation": "First-order thinking asks whether an action works now. Second-order thinking asks what the action teaches, incentivizes, constrains, or compounds next.",
+    "practice": "For one tempting shortcut, complete: “And then what?” three times."
+  },
+  {
+    "id": "thinking-falsifiability",
+    "topic": "Thinking",
+    "title": "Falsifiability",
+    "prompt": "What evidence would change your mind?",
+    "explanation": "If no observation can count against a belief, it cannot guide learning. Naming disconfirming evidence turns an opinion into a testable model.",
+    "practice": "Write one strong belief and the smallest credible signal that would force you to update it."
+  },
+  {
+    "id": "thinking-map-territory",
+    "topic": "Thinking",
+    "title": "Map and territory",
+    "prompt": "When does a useful framework become a liability?",
+    "explanation": "A model compresses reality so you can act, but its categories are not the world itself. Trouble starts when evidence is forced to fit the model instead of updating it.",
+    "practice": "Find one field in your sales framework that looks complete but rests on weak evidence."
+  },
+  {
+    "id": "thinking-feedback-loop",
+    "topic": "Thinking",
+    "title": "Feedback loops",
+    "prompt": "Why do outcomes alone teach slowly?",
+    "explanation": "Outcomes are delayed and noisy. A tighter loop connects an action to a proximal signal, a review, and a deliberate adjustment while the context is still available.",
+    "practice": "Choose one weekly skill and define its attempt, observable signal, review time, and next adjustment."
+  },
+  {
+    "id": "writing-specificity",
+    "topic": "Writing",
+    "title": "Specificity",
+    "prompt": "Why does concrete language feel more credible?",
+    "explanation": "Specific nouns and observable actions let a reader test the claim. Abstract language can hide missing thought behind a polished surface.",
+    "practice": "Replace three abstract nouns in your last note with a person, action, number, or example."
+  },
+  {
+    "id": "writing-one-job",
+    "topic": "Writing",
+    "title": "One job per paragraph",
+    "prompt": "What should a paragraph earn before the next one begins?",
+    "explanation": "A strong paragraph advances one move: claim, evidence, complication, example, or consequence. Mixing several moves makes the reader organize the draft for you.",
+    "practice": "Label the job of every paragraph in a draft. Split or delete the ones with two labels or none."
+  },
+  {
+    "id": "writing-edit-distance",
+    "topic": "Writing",
+    "title": "Edit for distance",
+    "prompt": "Why is a short pause useful before revision?",
+    "explanation": "Distance weakens your memory of intended meaning, so you can see what the words actually communicate. Even a small context switch can restore some reader perspective.",
+    "practice": "Before sending an important note, change medium or font size and read it aloud once."
+  },
+  {
+    "id": "writing-strong-verbs",
+    "topic": "Writing",
+    "title": "Strong verbs",
+    "prompt": "What do nominalizations conceal?",
+    "explanation": "Turning actions into nouns often removes the actor and bloats the sentence. A direct verb restores who did what.",
+    "practice": "Search a draft for words ending in “-tion” and convert three back into verbs."
+  },
+  {
+    "id": "writing-reader-question",
+    "topic": "Writing",
+    "title": "The reader’s question",
+    "prompt": "What invisible question should each section answer?",
+    "explanation": "Readers keep moving when the draft anticipates what they now need to know. Structure is the sequence of those questions, not a collection of headings.",
+    "practice": "Write the reader’s question beside each section and reorder any section that answers too early or late."
+  },
+  {
+    "id": "writing-cut-setup",
+    "topic": "Writing",
+    "title": "Cut the runway",
+    "prompt": "Why do first drafts often begin too early?",
+    "explanation": "Writers use introductory sentences to discover what they mean. Once the point exists, the private warm-up can usually go.",
+    "practice": "Delete the first two sentences of a draft temporarily. See whether the third is the real opening."
+  },
+  {
+    "id": "career-skill-stack",
+    "topic": "Career",
+    "title": "Skill stack",
+    "prompt": "Why can an unusual combination beat mastery of one common skill?",
+    "explanation": "Complementary skills multiply: technical fluency makes commercial judgment more credible, while writing makes both more visible and reusable.",
+    "practice": "Name three skills whose combination differentiates you and one project that demonstrates all three."
+  },
+  {
+    "id": "career-evidence",
+    "topic": "Career",
+    "title": "Evidence of work",
+    "prompt": "What makes a small public project valuable?",
+    "explanation": "A useful artifact turns a claim about curiosity or ability into something inspectable. It also creates a tighter learning loop than private intention.",
+    "practice": "Publish one small tool or note that answers a real question you encountered this week."
+  },
+  {
+    "id": "career-optionality",
+    "topic": "Career",
+    "title": "Optionality",
+    "prompt": "Which actions create more future choices?",
+    "explanation": "Skills, relationships, reputation, savings, and shipped work can open paths without requiring an immediate commitment to one. Optionality is useful when paired with direction, not permanent indecision.",
+    "practice": "Compare two next steps by what each teaches, signals, and makes possible six months later."
+  },
+  {
+    "id": "career-reference-story",
+    "topic": "Career",
+    "title": "Reference stories",
+    "prompt": "Why should interview stories be built before the interview?",
+    "explanation": "Preparation lets you choose the clearest evidence, recover precise details, and distinguish your contribution from the team’s. It creates honesty and brevity, not canned delivery.",
+    "practice": "Build one story card with context, stakes, your decisions, result, and what changed afterward."
+  },
+  {
+    "id": "career-market-learning",
+    "topic": "Career",
+    "title": "Market learning",
+    "prompt": "How do you evaluate a market beyond its headline growth?",
+    "explanation": "Look for urgency, budget ownership, switching friction, competitive structure, product truth, and whether customers can actually adopt what they buy.",
+    "practice": "Choose one target company and map its buyer, trigger, status quo, budget, and deployment risk."
+  },
+  {
+    "id": "career-energy-audit",
+    "topic": "Career",
+    "title": "Energy audit",
+    "prompt": "What does recurring energy reveal that preference statements miss?",
+    "explanation": "The tasks that reliably create focus, curiosity, or momentum are behavioral evidence about fit. Energy is not the only criterion, but it is useful data.",
+    "practice": "For one week, note which activities leave you more alert afterward. Look for the repeated conditions."
+  },
+  {
+    "id": "sales-discovery-buckets",
+    "topic": "Sales craft",
+    "title": "Four buckets of discovery",
+    "prompt": "What must discovery uncover before a solution is relevant?",
+    "explanation": "Strong discovery connects the customer’s current state, desired future state, required capabilities, and measurable success criteria. Skipping a bucket leaves the business case or solution fit resting on assumptions.",
+    "practice": "Divide a page into the four buckets for one opportunity. Mark every statement that the customer has not directly verified."
+  },
+  {
+    "id": "sales-challenger-behaviors",
+    "topic": "Sales craft",
+    "title": "Teach, tailor, take control",
+    "prompt": "Why do the three Challenger behaviors work as a system?",
+    "explanation": "Teaching earns attention with a differentiated insight, tailoring makes it matter to each stakeholder, and constructive control turns agreement into a navigable buying process.",
+    "practice": "For your next meeting, write one thing you will teach, one stakeholder-specific implication, and one next step you will confidently request."
+  },
+  {
+    "id": "sales-commercial-insight",
+    "topic": "Sales craft",
+    "title": "Commercial insight",
+    "prompt": "What makes an insight commercially useful rather than merely interesting?",
+    "explanation": "A commercial insight changes how the customer understands an important problem or opportunity and leads naturally toward a capability the seller can credibly defend.",
+    "practice": "Write an insight as four lines: accepted belief, overlooked evidence, business implication, and the capability now required."
+  },
+  {
+    "id": "sales-reframe-solution",
+    "topic": "Sales craft",
+    "title": "Reframe before solution",
+    "prompt": "Why should a reframe come before a product recommendation?",
+    "explanation": "A reframe changes the customer’s understanding of the problem. The solution becomes meaningful only after the buyer sees why the old frame produces an incomplete or costly response.",
+    "practice": "Take one product pitch and remove the product. Rewrite it as a new way for the customer to understand the underlying problem."
+  },
+  {
+    "id": "sales-taking-control",
+    "topic": "Sales craft",
+    "title": "Constructive control",
+    "prompt": "What is the difference between guiding a deal and pressuring a buyer?",
+    "explanation": "Constructive control makes hard issues discussable, clarifies tradeoffs, and guides the next decision around customer value. Pressure demands seller timing without improving the customer’s decision.",
+    "practice": "Find one stalled next step. Draft a direct request that names the customer benefit, owner, date, and consequence of delay."
+  },
+  {
+    "id": "sales-meddpicc",
+    "topic": "Sales craft",
+    "title": "MEDDPICC",
+    "prompt": "What does MEDDPICC ask a seller to validate?",
+    "explanation": "The framework tests Metrics, Economic Buyer, Decision Criteria, Decision Process, Paper Process, Identify Pain, Champion, and Competition. Its value comes from evidence, not completed labels.",
+    "practice": "Score each element in one opportunity as verified, inferred, or unknown. Choose the unknown that creates the greatest forecast risk."
+  },
+  {
+    "id": "sales-metrics",
+    "topic": "Sales craft",
+    "title": "Customer-specific metrics",
+    "prompt": "When does a metric become useful evidence for a purchase?",
+    "explanation": "A useful metric establishes a credible baseline, quantifies the desired change, and connects that change to a business outcome the customer values and owns.",
+    "practice": "Write one metric as baseline, target, time horizon, financial or operational value, and customer owner."
+  },
+  {
+    "id": "sales-economic-buyer",
+    "topic": "Sales craft",
+    "title": "Economic buyer",
+    "prompt": "Why is seniority not enough to identify the economic buyer?",
+    "explanation": "The economic buyer has final authority over the funds or business tradeoff required for the purchase. A senior stakeholder may influence the decision without owning that authority.",
+    "practice": "For one deal, write who can approve the spend, who can redirect it, and what evidence confirms those powers."
+  },
+  {
+    "id": "sales-decision-criteria-process",
+    "topic": "Sales craft",
+    "title": "Criteria versus process",
+    "prompt": "How do decision criteria differ from the decision process?",
+    "explanation": "Decision criteria define what the customer will evaluate. The decision process defines how, when, and by whom the evaluation and approval will happen.",
+    "practice": "Make two columns for a live deal: evaluation requirements and decision steps. Move any item that is sitting in the wrong column."
+  },
+  {
+    "id": "sales-paper-process",
+    "topic": "Sales craft",
+    "title": "Paper process",
+    "prompt": "Why is “send the contract” not a paper process?",
+    "explanation": "A real paper process maps procurement, legal, privacy, security, finance, and signature requirements, including owners, dependencies, and realistic review time.",
+    "practice": "Work backward from a target signature date and add every approval, owner, handoff, and buffer the customer confirms."
+  },
+  {
+    "id": "sales-three-whys",
+    "topic": "Sales craft",
+    "title": "The three whys",
+    "prompt": "What three questions expose whether a deal has a compelling reason to happen?",
+    "explanation": "Why change anything tests pain, why choose this approach tests differentiation, and why act now tests urgency. Weakness in any one can leave the status quo as the safest choice.",
+    "practice": "Answer all three for one opportunity in customer language. Underline every answer supported by direct evidence."
+  },
+  {
+    "id": "sales-net-revenue-retention",
+    "topic": "Sales craft",
+    "title": "Net revenue retention",
+    "prompt": "What does NRR reveal that new-logo growth does not?",
+    "explanation": "Net revenue retention shows how recurring revenue from an existing customer cohort changes after expansion, contraction, and churn, excluding revenue from new customers.",
+    "practice": "Start with a fictional $100 cohort, add $15 expansion, subtract $5 contraction and $10 churn, then calculate and interpret the NRR."
+  },
+  {
+    "id": "sales-cac-payback",
+    "topic": "Sales craft",
+    "title": "CAC payback period",
+    "prompt": "What does the CAC payback period test?",
+    "explanation": "It estimates how many months of gross-margin-adjusted customer contribution are needed to recover acquisition cost. A longer period ties up more capital and raises execution risk.",
+    "practice": "Choose hypothetical CAC, monthly recurring revenue, and gross margin inputs. Calculate the payback period and name the assumption most likely to move it."
+  },
+  {
+    "id": "sales-bookings-billings-revenue",
+    "topic": "Sales craft",
+    "title": "Bookings, billings, revenue",
+    "prompt": "Why are bookings, billings, and revenue not interchangeable?",
+    "explanation": "Bookings record contracted business, billings record amounts invoiced, and revenue is recognized as the company fulfills its obligations. The three can occur on different schedules.",
+    "practice": "Take a one-year prepaid contract and mark the booking date, invoice date, cash timing, and monthly revenue-recognition schedule."
+  },
+  {
+    "id": "technical-large-language-model",
+    "topic": "Technical fluency",
+    "title": "Large language model",
+    "prompt": "What does a large language model actually learn to do?",
+    "explanation": "An LLM learns statistical patterns in token sequences so it can predict and generate language from an input. Fluent output reflects learned patterns, not guaranteed factual understanding.",
+    "practice": "Explain next-token prediction with a three-word sentence, then name one reason that plausible continuation can still be wrong."
+  },
+  {
+    "id": "technical-token",
+    "topic": "Technical fluency",
+    "title": "Tokens",
+    "prompt": "Why is a token not the same as a word?",
+    "explanation": "A tokenizer divides text into model-specific units that may be words, word fragments, punctuation, or symbols. Model limits and usage are measured in these units rather than ordinary word count.",
+    "practice": "Take a sentence with a long word, punctuation, and a number. Predict where a tokenizer might split it, then check your assumptions with any tokenizer."
+  },
+  {
+    "id": "technical-context-window",
+    "topic": "Technical fluency",
+    "title": "Context window",
+    "prompt": "What competes for space inside a model’s context window?",
+    "explanation": "Instructions, conversation history, retrieved material, tool results, and generated output all consume tokens in the finite context the model can consider at one time.",
+    "practice": "Budget a fictional context window across instructions, source material, examples, and answer space. Decide what you would compress first."
+  },
+  {
+    "id": "technical-prompt-engineering",
+    "topic": "Technical fluency",
+    "title": "Prompt engineering",
+    "prompt": "What makes a prompt operational instead of merely descriptive?",
+    "explanation": "An operational prompt gives the model a clear objective, relevant context, constraints, output shape, and—when useful—examples or evaluation criteria.",
+    "practice": "Rewrite one vague request using five lines: objective, context, constraints, output format, and definition of a good result."
+  },
+  {
+    "id": "technical-rag",
+    "topic": "Technical fluency",
+    "title": "Retrieval-augmented generation",
+    "prompt": "Why add retrieval to a generative AI system?",
+    "explanation": "RAG finds relevant external information at request time and places it in the model’s context, helping answers use knowledge that may be private, detailed, or absent from training.",
+    "practice": "Sketch query, retrieval, context assembly, answer, and citation. Add one failure mode and one check at every step."
+  },
+  {
+    "id": "technical-ai-agent",
+    "topic": "Technical fluency",
+    "title": "AI agent",
+    "prompt": "What distinguishes an agent from a single model response?",
+    "explanation": "An agent combines a model with instructions, tools, state, and a feedback loop so it can choose and carry out multiple actions toward a goal.",
+    "practice": "Map one agent workflow as observe, decide, act, verify, and stop. Define the permission and failure boundary at each tool call."
+  },
+  {
+    "id": "technical-training-inference",
+    "topic": "Technical fluency",
+    "title": "Training versus inference",
+    "prompt": "When does a model learn, and when does it merely apply what it learned?",
+    "explanation": "Training adjusts model parameters using data and an optimization objective. Inference keeps those learned parameters fixed while producing an output for new input.",
+    "practice": "Classify data preparation, parameter updates, prompt processing, and response generation as training or inference, then compare their main costs."
+  },
+  {
+    "id": "technical-data-lake-warehouse",
+    "topic": "Technical fluency",
+    "title": "Data lake versus warehouse",
+    "prompt": "What different jobs are data lakes and data warehouses optimized for?",
+    "explanation": "A data lake stores large volumes of raw data for flexible future use. A data warehouse stores curated, structured data optimized for consistent analytics and reporting.",
+    "practice": "Place raw application logs and a finance KPI dashboard in the better starting system. Explain the schema, governance, and query tradeoff."
+  },
+  {
+    "id": "technical-etl-elt",
+    "topic": "Technical fluency",
+    "title": "ETL versus ELT",
+    "prompt": "When does transformation happen in ETL and ELT?",
+    "explanation": "ETL transforms data before loading it into the destination. ELT loads first and uses the destination platform’s compute to transform the data there.",
+    "practice": "Draw both pipelines for the same source. Mark where raw data exists, where quality checks run, and which system pays the compute cost."
+  },
+  {
+    "id": "technical-oltp-olap",
+    "topic": "Technical fluency",
+    "title": "OLTP versus OLAP",
+    "prompt": "Why should a checkout transaction and a five-year trend query use different data patterns?",
+    "explanation": "OLTP supports frequent, small operational transactions with fast writes and consistency. OLAP supports complex analytical queries over larger historical datasets.",
+    "practice": "Classify five actions from an online store as OLTP or OLAP and explain the latency and data-shape requirement behind each."
+  },
+  {
+    "id": "technical-cloud-service-models",
+    "topic": "Technical fluency",
+    "title": "IaaS, PaaS, SaaS",
+    "prompt": "How do common cloud service models shift operating responsibility?",
+    "explanation": "IaaS provides infrastructure you configure, PaaS provides a managed application platform, and SaaS provides a complete application operated by the vendor.",
+    "practice": "Draw the stack from facilities to application and mark who manages each layer under IaaS, PaaS, and SaaS."
+  },
+  {
+    "id": "technical-vpc",
+    "topic": "Technical fluency",
+    "title": "Virtual private cloud",
+    "prompt": "What does a VPC isolate and let you control?",
+    "explanation": "A VPC is a logically isolated network in a public cloud where you control address ranges, subnets, routing, and network access rules.",
+    "practice": "Draw a minimal VPC with public and private subnets, an internet path, an application tier, and a database tier."
+  },
+  {
+    "id": "technical-subnet",
+    "topic": "Technical fluency",
+    "title": "Subnet",
+    "prompt": "Why divide one network into smaller address ranges?",
+    "explanation": "Subnets segment a network so routing, access, fault isolation, and address use can be managed separately for different workloads or trust zones.",
+    "practice": "Take a fictional application with web, application, and database tiers. Assign each tier a subnet and justify the routes it should have."
+  },
+  {
+    "id": "technical-load-balancing",
+    "topic": "Technical fluency",
+    "title": "Load balancing",
+    "prompt": "How does a load balancer improve both scale and resilience?",
+    "explanation": "It distributes requests across healthy targets, allowing horizontal capacity while avoiding instances that fail health checks.",
+    "practice": "Draw three application instances behind a load balancer. Walk through what happens when one instance becomes slow but does not fully crash."
+  },
+  {
+    "id": "technical-cdn",
+    "topic": "Technical fluency",
+    "title": "Content delivery network",
+    "prompt": "Why does serving content from the edge improve performance?",
+    "explanation": "A CDN caches content at geographically distributed edge locations, reducing network distance and the work required from the origin server.",
+    "practice": "Trace one request through a cache hit and a cache miss. Label latency, origin work, TTL, and invalidation behavior."
+  },
+  {
+    "id": "technical-serverless",
+    "topic": "Technical fluency",
+    "title": "Serverless computing",
+    "prompt": "What responsibility disappears—and what does not—in serverless computing?",
+    "explanation": "The provider manages server provisioning, capacity, and much of the scaling. The team still owns code, data, permissions, observability, cost behavior, and application reliability.",
+    "practice": "Choose one bursty workload and one steady workload. Decide whether serverless fits each and name the operational tradeoff."
+  },
+  {
+    "id": "technical-containers",
+    "topic": "Technical fluency",
+    "title": "Containers",
+    "prompt": "What does a container package without becoming a virtual machine?",
+    "explanation": "A container packages an application and its runtime dependencies for consistent execution while sharing the host operating-system kernel.",
+    "practice": "For one application, list what belongs in the image, what arrives at runtime, and what remains the host’s responsibility."
+  },
+  {
+    "id": "technical-kubernetes",
+    "topic": "Technical fluency",
+    "title": "Kubernetes",
+    "prompt": "What does a container orchestrator reconcile?",
+    "explanation": "Kubernetes continuously works to match declared desired state by scheduling workloads and managing deployment, scaling, service discovery, configuration, and recovery.",
+    "practice": "Describe a desired state of three replicas, then walk through how the system should react when one container exits."
+  },
+  {
+    "id": "technical-ci-cd",
+    "topic": "Technical fluency",
+    "title": "CI/CD pipeline",
+    "prompt": "What confidence should each pipeline stage add?",
+    "explanation": "A CI/CD pipeline automates building, testing, and preparing or releasing software so changes move from version control to users quickly and repeatably.",
+    "practice": "Map commit, build, unit test, integration test, security check, deploy, and rollback for one small application."
+  },
+  {
+    "id": "technical-infrastructure-as-code",
+    "topic": "Technical fluency",
+    "title": "Infrastructure as code",
+    "prompt": "Why is a reviewed definition safer than an undocumented console change?",
+    "explanation": "Infrastructure as code makes system configuration versioned, reviewable, repeatable, testable, and automatable while reducing configuration drift.",
+    "practice": "Choose one manual infrastructure change and describe how a code review, automated plan, and rollback would alter its risk."
+  },
+  {
+    "id": "technical-cia-triad",
+    "topic": "Technical fluency",
+    "title": "CIA triad",
+    "prompt": "What three outcomes should a security control protect?",
+    "explanation": "Confidentiality prevents unauthorized disclosure, integrity prevents unauthorized alteration, and availability keeps systems and data accessible when needed.",
+    "practice": "Take one incident and write its confidentiality, integrity, and availability impact separately. Do not assume all three are affected."
+  },
+  {
+    "id": "technical-aaa-framework",
+    "topic": "Technical fluency",
+    "title": "AAA framework",
+    "prompt": "What do authentication, authorization, and accounting each contribute?",
+    "explanation": "Authentication verifies identity, authorization determines permitted actions, and accounting records activity for audit and accountability.",
+    "practice": "Trace one user from sign-in to a sensitive action. Identify the evidence produced at each of the three stages."
+  },
+  {
+    "id": "technical-authentication-authorization",
+    "topic": "Technical fluency",
+    "title": "Authentication versus authorization",
+    "prompt": "Why can a valid identity still receive an access-denied response?",
+    "explanation": "Authentication establishes who or what an actor is. Authorization separately decides which resources and actions that authenticated actor may use.",
+    "practice": "Write one scenario where authentication succeeds but authorization correctly fails, then name the policy being enforced."
+  },
+  {
+    "id": "technical-least-privilege",
+    "topic": "Technical fluency",
+    "title": "Least privilege",
+    "prompt": "What dimensions make a permission broader than necessary?",
+    "explanation": "Access may be excessive in action, resource, scope, or duration. Least privilege limits all four to what the current task actually requires.",
+    "practice": "Take one broad administrator role and reduce its actions, resources, environment scope, and time window."
+  },
+  {
+    "id": "technical-attack-surface-vector",
+    "topic": "Technical fluency",
+    "title": "Attack surface and vector",
+    "prompt": "How does an attack surface differ from an attack vector?",
+    "explanation": "The attack surface is the full set of exposed entry points. An attack vector is a specific path or technique used to reach and exploit one of them.",
+    "practice": "Inventory five entry points for a web application, then pair each with one plausible attack vector and one control."
+  },
+  {
+    "id": "technical-hashing-encryption",
+    "topic": "Technical fluency",
+    "title": "Hashing versus encryption",
+    "prompt": "Why is hashing not a substitute for encryption?",
+    "explanation": "Encryption is reversible with the correct key to preserve confidentiality. Hashing produces a fixed-size digest designed to be one-way for integrity checks and comparisons.",
+    "practice": "Choose the right tool for storing a password verifier, protecting a message, and checking a downloaded file. Explain each choice."
+  },
+  {
+    "id": "technical-pki",
+    "topic": "Technical fluency",
+    "title": "Public key infrastructure",
+    "prompt": "How does PKI make an unfamiliar public key trustworthy?",
+    "explanation": "PKI binds public keys to verified identities through digital certificates and trusted issuers, enabling authentication and encrypted communication at scale.",
+    "practice": "Trace a website certificate from subject to issuing authority to trusted root. Mark what the browser verifies at each step."
+  },
+  {
+    "id": "technical-prompt-injection",
+    "topic": "Technical fluency",
+    "title": "Prompt injection",
+    "prompt": "Why must retrieved text be treated as untrusted input?",
+    "explanation": "Untrusted content can instruct an AI system to ignore intended rules, reveal protected context, or misuse connected tools and data.",
+    "practice": "Threat-model a document-reading assistant. Separate data from instructions and add permission, output, and human-review boundaries."
+  },
+  {
+    "id": "technical-oauth-oidc",
+    "topic": "Technical fluency",
+    "title": "OAuth and OpenID Connect",
+    "prompt": "Why does delegated access not automatically prove user identity?",
+    "explanation": "OAuth delegates authorization to access resources. OpenID Connect adds an identity layer on top of OAuth so a client can authenticate the user.",
+    "practice": "Trace an access token and an identity token through a sign-in flow. Label their audience and the question each token answers."
+  },
+  {
+    "id": "technical-sqli-xss",
+    "topic": "Technical fluency",
+    "title": "SQL injection and XSS",
+    "prompt": "What different execution targets do SQL injection and cross-site scripting attack?",
+    "explanation": "SQL injection manipulates database queries through unsafe input. Cross-site scripting injects executable content that runs in another user’s browser.",
+    "practice": "Match parameterized queries and output encoding to the attack they primarily mitigate, then explain why input validation still helps both."
+  },
+  {
+    "id": "thinking-expected-value",
+    "topic": "Thinking",
+    "title": "Expected value",
+    "prompt": "Why is the most likely outcome not always the best decision guide?",
+    "explanation": "Expected value weighs every meaningful outcome by both its probability and impact. It exposes choices where a less likely result matters enough to change the decision.",
+    "practice": "Estimate three possible outcomes for one decision, assign rough probabilities and values, and compare the weighted result with your intuition."
+  },
+  {
+    "id": "thinking-goodharts-law",
+    "topic": "Thinking",
+    "title": "Goodhart’s law",
+    "prompt": "What changes when a useful measure becomes a target?",
+    "explanation": "People optimize the metric, often discovering ways to improve the number without improving the underlying outcome. The measure loses value when incentives detach it from reality.",
+    "practice": "Choose one team metric and list two ways it could improve while the real outcome worsens. Add a balancing measure."
+  },
+  {
+    "id": "writing-bluf",
+    "topic": "Writing",
+    "title": "Bottom line up front",
+    "prompt": "When should the conclusion arrive before the reasoning?",
+    "explanation": "In decision-oriented writing, the reader usually needs the recommendation, request, or result first. Evidence can then explain and qualify the conclusion without making the reader hunt for it.",
+    "practice": "Rewrite one status update so its first sentence contains the outcome, significance, and requested action."
+  },
+  {
+    "id": "writing-claim-evidence-implication",
+    "topic": "Writing",
+    "title": "Claim, evidence, implication",
+    "prompt": "What keeps a persuasive paragraph from becoming an unsupported assertion or a data dump?",
+    "explanation": "A claim states the point, evidence makes it credible, and implication explains why the reader should care. Missing any one weakens the reasoning.",
+    "practice": "Take one paragraph and label its claim, evidence, and implication. Write the missing move if one is absent."
+  },
+  {
+    "id": "career-deliberate-practice",
+    "topic": "Career",
+    "title": "Deliberate practice",
+    "prompt": "Why does repeating the job not guarantee improvement?",
+    "explanation": "Deliberate practice isolates a specific subskill, works near the edge of current ability, produces timely feedback, and repeats with adjustment.",
+    "practice": "Choose one subskill you use at work and design a 20-minute drill with a scoring rule and immediate feedback."
+  },
+  {
+    "id": "career-capital",
+    "topic": "Career",
+    "title": "Career capital",
+    "prompt": "What makes an experience valuable beyond its current title or compensation?",
+    "explanation": "An experience builds career capital when it creates rare skills, credible evidence, trusted relationships, or judgment that increases future leverage and choice.",
+    "practice": "Score one opportunity on skills, evidence, relationships, judgment, and optionality. Name what would make the experience compound."
+  }
+]

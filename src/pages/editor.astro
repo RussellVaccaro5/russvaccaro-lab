@@ -1,0 +1,277 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageIntro from '../components/PageIntro.astro';
+import booksData from '../data/books.json';
+import discoveryData from '../data/discovery-questions.json';
+import interviewData from '../data/interview-questions.json';
+import learningData from '../data/learning-cards.json';
+
+const editorEnabled = import.meta.env.PUBLIC_EDITOR_ENABLED === 'true';
+const initialData = { books: booksData, interview: interviewData, learning: learningData, discovery: discoveryData };
+---
+
+<BaseLayout title="Content editor — Russ Vaccaro Lab" description="Private structured-content editor." robots="noindex, nofollow, noarchive">
+  {editorEnabled ? (
+    <div class="editor-shell">
+      <PageIntro eyebrow="Private workspace" title="Content editor" description="Create, review, validate, export, and publish the lab’s structured content without editing source files." status="Protected deployment" />
+
+      <div class="editor-toolbar tool-panel">
+        <div class="field-group dataset-field">
+          <label for="dataset">Dataset</label>
+          <select id="dataset">
+            <option value="books">Reading catalog</option>
+            <option value="interview">Interview questions</option>
+            <option value="learning">Learning cards</option>
+            <option value="discovery">POV prompts</option>
+          </select>
+        </div>
+        <div class="field-group search-field">
+          <label for="entry-search">Find an entry</label>
+          <input id="entry-search" type="search" placeholder="Search ID or content…" autocomplete="off" />
+        </div>
+        <div class="toolbar-actions">
+          <button class="button-secondary" id="import-button" type="button">Import JSON</button>
+          <button class="button-secondary" id="export-button" type="button">Export JSON</button>
+          <button class="button-primary" id="publish-button" type="button">Create pull request</button>
+          <input id="import-file" type="file" accept="application/json,.json" hidden />
+        </div>
+      </div>
+
+      <div class="editor-status" aria-live="polite">
+        <span id="save-state" class="status-pill">No changes</span>
+        <span id="validation-state">All entries valid</span>
+      </div>
+
+      <div class="editor-grid">
+        <aside class="entry-browser tool-panel" aria-label="Entries">
+          <div class="browser-heading">
+            <div><p class="eyebrow">Entries</p><h2 id="entry-count">0 items</h2></div>
+            <button class="icon-button" id="new-entry" type="button" aria-label="Add entry">＋</button>
+          </div>
+          <div id="entry-list" class="entry-list"></div>
+          <p id="empty-list" class="empty-copy" hidden>No entries match this search.</p>
+        </aside>
+
+        <main class="entry-workspace tool-panel" aria-labelledby="form-title">
+          <div class="form-heading">
+            <div><p class="eyebrow" id="form-kicker">Edit entry</p><h2 id="form-title">Choose an entry</h2></div>
+            <div class="entry-actions">
+              <button class="button-secondary" id="duplicate-entry" type="button">Duplicate</button>
+              <button class="danger-button" id="delete-entry" type="button">Delete</button>
+            </div>
+          </div>
+          <form id="entry-form" novalidate></form>
+          <div id="form-errors" class="form-errors" aria-live="polite" hidden></div>
+        </main>
+
+        <aside class="preview-panel tool-panel" aria-labelledby="preview-title">
+          <p class="eyebrow">Live preview</p>
+          <h2 id="preview-title">Rendered entry</h2>
+          <div id="entry-preview" class="entry-preview"></div>
+        </aside>
+      </div>
+
+      <dialog id="publish-dialog">
+        <form method="dialog" class="dialog-card" id="publish-form">
+          <div><p class="eyebrow">GitHub publishing</p><h2>Create a pull request</h2></div>
+          <p>All changed datasets will be committed to a new branch for review. Nothing is merged automatically.</p>
+          <div class="field-group"><label for="change-title">Pull request title</label><input id="change-title" required maxlength="100" value="Update lab content" /></div>
+          <div class="field-group"><label for="change-summary">Summary</label><textarea id="change-summary" required rows="4">Updated structured content through the private lab editor.</textarea></div>
+          <div id="publish-errors" class="form-errors" aria-live="polite" hidden></div>
+          <div class="dialog-actions"><button class="button-secondary" value="cancel">Cancel</button><button class="button-primary" id="confirm-publish" value="default">Create pull request</button></div>
+        </form>
+      </dialog>
+    </div>
+  ) : (
+    <div class="page-shell unavailable"><p class="eyebrow">Not available</p><h1>Editor access is disabled.</h1><p>This workspace is only built in the protected editor deployment.</p><a class="button-secondary" href="/">Return to the lab</a></div>
+  )}
+</BaseLayout>
+
+{editorEnabled && <script is:inline define:vars={{ initialData }}>window.__EDITOR_DATA__ = initialData;</script>}
+
+{editorEnabled && <script>
+  import { getValidationIssues } from '../data/validation';
+  import { bookStatuses, interviewCategories, interviewDifficulties, learningTopics } from '../data/schema';
+
+  type Kind = 'books' | 'interview' | 'learning' | 'discovery';
+  type Entry = Record<string, unknown>;
+  const source = (window as unknown as { __EDITOR_DATA__: Record<Kind, Entry[]> }).__EDITOR_DATA__;
+  const pristine = structuredClone(source);
+  const datasets = structuredClone(source);
+  let kind: Kind = 'books';
+  let selectedId = '';
+  let dirty = false;
+
+  const $ = <T extends Element>(selector: string) => document.querySelector<T>(selector)!;
+  const datasetSelect = $<HTMLSelectElement>('#dataset');
+  const search = $<HTMLInputElement>('#entry-search');
+  const list = $('#entry-list');
+  const form = $<HTMLFormElement>('#entry-form');
+  const fields: Record<Kind, Array<{ key: string; label: string; type?: string; options?: readonly string[]; help?: string }>> = {
+    books: [
+      { key: 'id', label: 'Stable ID', help: 'Lowercase and hyphenated. Do not change published IDs.' }, { key: 'title', label: 'Title' }, { key: 'author', label: 'Author' },
+      { key: 'topic', label: 'Topic' }, { key: 'status', label: 'Reading status', options: bookStatuses }, { key: 'year', label: 'Publication year', type: 'number' },
+      { key: 'rating', label: 'Rating', options: ['', '1', '2', '3', '4', '5'], help: 'Leave blank when unrated.' }, { key: 'note', label: 'Note', type: 'textarea' },
+    ],
+    interview: [
+      { key: 'id', label: 'Stable ID', help: 'Do not change published IDs.' }, { key: 'category', label: 'Category', options: interviewCategories },
+      { key: 'difficulty', label: 'Difficulty', options: interviewDifficulties }, { key: 'prompt', label: 'Question', type: 'textarea' },
+      { key: 'followUps', label: 'Follow-up questions', type: 'lines', help: 'One follow-up per line.' }, { key: 'listenFor', label: 'Listen for', type: 'textarea' },
+    ],
+    learning: [
+      { key: 'id', label: 'Stable ID', help: 'Do not change published IDs.' }, { key: 'topic', label: 'Topic', options: learningTopics }, { key: 'title', label: 'Title' },
+      { key: 'prompt', label: 'Prompt', type: 'textarea' }, { key: 'explanation', label: 'Explanation', type: 'textarea' }, { key: 'practice', label: 'Practice', type: 'textarea' },
+    ],
+    discovery: [
+      { key: 'id', label: 'Stable ID', help: 'Do not change published IDs.' }, { key: 'label', label: 'Label' },
+      { key: 'prompt', label: 'Prompt', type: 'textarea' }, { key: 'placeholder', label: 'Example placeholder', type: 'textarea' },
+    ],
+  };
+
+  const current = () => datasets[kind].find((entry) => entry.id === selectedId);
+  const labelFor = (entry: Entry) => String(entry.title || entry.label || entry.prompt || entry.id);
+  const escape = (value: unknown) => String(value ?? '').replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char]!);
+
+  function setDirty(value = true) {
+    dirty = value;
+    $('#save-state').textContent = dirty ? 'Unpublished changes' : 'No changes';
+    $('#save-state').classList.toggle('is-dirty', dirty);
+  }
+
+  function renderList() {
+    const query = search.value.trim().toLowerCase();
+    const matches = datasets[kind].filter((entry) => JSON.stringify(entry).toLowerCase().includes(query));
+    $('#entry-count').textContent = `${matches.length} of ${datasets[kind].length}`;
+    list.innerHTML = matches.map((entry) => `<button class="entry-row ${entry.id === selectedId ? 'is-selected' : ''}" type="button" data-id="${escape(entry.id)}"><strong>${escape(labelFor(entry))}</strong><span>${escape(entry.id)}</span></button>`).join('');
+    $('#empty-list').toggleAttribute('hidden', matches.length > 0);
+    list.querySelectorAll<HTMLButtonElement>('[data-id]').forEach((button) => button.addEventListener('click', () => { selectedId = button.dataset.id!; render(); }));
+  }
+
+  function inputMarkup(field: (typeof fields)[Kind][number], value: unknown) {
+    const id = `field-${field.key}`;
+    const shown = Array.isArray(value) ? value.join('\n') : value ?? '';
+    const control = field.options
+      ? `<select id="${id}" name="${field.key}">${field.options.map((option) => `<option value="${escape(option)}" ${String(shown) === option ? 'selected' : ''}>${escape(option || 'Unrated')}</option>`).join('')}</select>`
+      : field.type === 'textarea' || field.type === 'lines'
+        ? `<textarea id="${id}" name="${field.key}" rows="${field.type === 'lines' ? 4 : 5}">${escape(shown)}</textarea>`
+        : `<input id="${id}" name="${field.key}" type="${field.type || 'text'}" value="${escape(shown)}" />`;
+    return `<div class="field-group editor-field"><label for="${id}">${field.label}</label>${control}${field.help ? `<p class="field-help">${field.help}</p>` : ''}<p class="field-error" data-error="${field.key}"></p></div>`;
+  }
+
+  function renderForm() {
+    const entry = current();
+    form.toggleAttribute('hidden', !entry);
+    $('#duplicate-entry').toggleAttribute('disabled', !entry);
+    $('#delete-entry').toggleAttribute('disabled', !entry);
+    if (!entry) { $('#form-title').textContent = 'Choose an entry'; $('#entry-preview').innerHTML = '<p>Select an entry or add a new one.</p>'; return; }
+    $('#form-title').textContent = labelFor(entry);
+    form.innerHTML = fields[kind].map((field) => inputMarkup(field, entry[field.key])).join('');
+    form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>('input, textarea, select').forEach((control) => control.addEventListener('input', () => {
+      const field = fields[kind].find(({ key }) => key === control.name)!;
+      const previousId = String(entry.id);
+      let value: unknown = control.value;
+      if (field.type === 'number') value = Number(control.value);
+      if (field.type === 'lines') value = control.value.split('\n').map((line) => line.trim()).filter(Boolean);
+      if (field.key === 'rating') value = control.value ? Number(control.value) : null;
+      entry[field.key] = value;
+      if (field.key === 'id') selectedId = String(value);
+      if (previousId !== selectedId || ['title', 'label', 'prompt'].includes(field.key)) renderList();
+      setDirty(); validate(); renderPreview();
+    }));
+    validate(); renderPreview();
+  }
+
+  function validate() {
+    const issues = getValidationIssues(kind, datasets[kind]);
+    const index = datasets[kind].findIndex((entry) => entry.id === selectedId);
+    const local = issues.filter((issue) => issue.index === index);
+    form.querySelectorAll<HTMLElement>('[data-error]').forEach((node) => { const issue = local.find(({ field }) => field === node.dataset.error); node.textContent = issue?.message || ''; node.closest('.field-group')?.classList.toggle('has-error', Boolean(issue)); });
+    $('#validation-state').textContent = issues.length ? `${issues.length} validation issue${issues.length === 1 ? '' : 's'}` : 'All entries valid';
+    $('#validation-state').classList.toggle('has-issues', issues.length > 0);
+    $<HTMLButtonElement>('#publish-button').disabled = issues.length > 0 || !dirty;
+    return issues;
+  }
+
+  function renderPreview() {
+    const entry = current(); if (!entry) return;
+    const details = Object.entries(entry).filter(([key]) => key !== 'id').map(([key, value]) => `<div><dt>${escape(key.replace(/([A-Z])/g, ' $1'))}</dt><dd>${Array.isArray(value) ? `<ul>${value.map((item) => `<li>${escape(item)}</li>`).join('')}</ul>` : escape(value || '—')}</dd></div>`).join('');
+    $('#entry-preview').innerHTML = `<p class="preview-id">${escape(entry.id)}</p><dl>${details}</dl>`;
+  }
+
+  function render() { renderList(); renderForm(); }
+  datasetSelect.addEventListener('change', () => { kind = datasetSelect.value as Kind; search.value = ''; selectedId = String(datasets[kind][0]?.id || ''); render(); });
+  search.addEventListener('input', renderList);
+  $('#new-entry').addEventListener('click', () => {
+    const base = kind === 'books' ? { id: 'new-book', title: 'New book', author: '', topic: '', status: 'Queue', year: new Date().getFullYear(), rating: null, note: '' }
+      : kind === 'interview' ? { id: 'new-question', category: interviewCategories[0], difficulty: interviewDifficulties[0], prompt: 'New interview question', followUps: [''], listenFor: '' }
+      : kind === 'learning' ? { id: 'new-card', topic: learningTopics[0], title: 'New learning card', prompt: '', explanation: '', practice: '' }
+      : { id: 'new-prompt', label: 'New prompt', prompt: '', placeholder: '' };
+    let id = base.id; let suffix = 2; while (datasets[kind].some((entry) => entry.id === id)) id = `${base.id}-${suffix++}`;
+    base.id = id; datasets[kind].unshift(base); selectedId = id; setDirty(); render(); form.querySelector<HTMLInputElement>('[name="id"]')?.focus();
+  });
+  $('#duplicate-entry').addEventListener('click', () => { const entry = current(); if (!entry) return; const copy = structuredClone(entry); copy.id = `${copy.id}-copy`; let suffix = 2; while (datasets[kind].some((item) => item.id === copy.id)) copy.id = `${entry.id}-copy-${suffix++}`; datasets[kind].unshift(copy); selectedId = String(copy.id); setDirty(); render(); });
+  $('#delete-entry').addEventListener('click', () => { const entry = current(); if (!entry || !confirm(`Delete “${labelFor(entry)}”? This will be included in the next export or pull request.`)) return; const index = datasets[kind].indexOf(entry); datasets[kind].splice(index, 1); selectedId = String(datasets[kind][Math.min(index, datasets[kind].length - 1)]?.id || ''); setDirty(); render(); });
+  $('#export-button').addEventListener('click', () => { const blob = new Blob([`${JSON.stringify(datasets[kind], null, 2)}\n`], { type: 'application/json' }); const anchor = document.createElement('a'); anchor.href = URL.createObjectURL(blob); anchor.download = `${kind === 'interview' ? 'interview-questions' : kind === 'learning' ? 'learning-cards' : kind === 'discovery' ? 'discovery-questions' : 'books'}.json`; anchor.click(); URL.revokeObjectURL(anchor.href); });
+  $('#import-button').addEventListener('click', () => $<HTMLInputElement>('#import-file').click());
+  $<HTMLInputElement>('#import-file').addEventListener('change', async (event) => { const file = (event.currentTarget as HTMLInputElement).files?.[0]; if (!file) return; try { const parsed = JSON.parse(await file.text()); const issues = getValidationIssues(kind, parsed); if (issues.length) throw new Error(`${issues.length} validation issue(s). First: ${issues[0].field} — ${issues[0].message}`); datasets[kind] = parsed; selectedId = String(parsed[0]?.id || ''); setDirty(); render(); } catch (error) { alert(`Could not import this file. ${error instanceof Error ? error.message : ''}`); } });
+
+  const dialog = $<HTMLDialogElement>('#publish-dialog');
+  $('#publish-button').addEventListener('click', () => dialog.showModal());
+  $('#publish-form').addEventListener('submit', async (event) => {
+    const submitter = (event as SubmitEvent).submitter as HTMLButtonElement; if (submitter?.value === 'cancel') return;
+    event.preventDefault(); const issues = Object.keys(datasets).flatMap((key) => getValidationIssues(key as Kind, datasets[key as Kind])); if (issues.length) return;
+    submitter.disabled = true; submitter.textContent = 'Publishing…';
+    try {
+      const changed = Object.fromEntries((Object.keys(datasets) as Kind[]).filter((key) => JSON.stringify(datasets[key]) !== JSON.stringify(pristine[key])).map((key) => [key, datasets[key]]));
+      const response = await fetch('/api/publish', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ title: $<HTMLInputElement>('#change-title').value, summary: $<HTMLTextAreaElement>('#change-summary').value, datasets: changed }) });
+      const result = await response.json(); if (!response.ok) throw new Error(result.error || 'Publishing failed.');
+      dialog.close(); setDirty(false); $('#save-state').innerHTML = `Pull request created · <a href="${escape(result.url)}" target="_blank" rel="noopener">Open PR</a>`;
+    } catch (error) { $('#publish-errors').removeAttribute('hidden'); $('#publish-errors').textContent = error instanceof Error ? error.message : 'Publishing failed.'; }
+    finally { submitter.disabled = false; submitter.textContent = 'Create pull request'; }
+  });
+  window.addEventListener('beforeunload', (event) => { if (dirty) event.preventDefault(); });
+  selectedId = String(datasets.books[0]?.id || ''); render();
+</script>}
+
+<style>
+  .editor-shell { width: min(1540px, calc(100% - 2rem)); margin: 0 auto; padding: 3rem 0 5rem; }
+  .editor-toolbar { display: grid; grid-template-columns: minmax(180px, .6fr) minmax(240px, 1fr) auto; gap: 1rem; align-items: end; margin: 1.5rem 0 .75rem; padding: 1rem; }
+  .toolbar-actions, .entry-actions, .dialog-actions { display: flex; gap: .6rem; flex-wrap: wrap; }
+  .editor-status { display: flex; justify-content: space-between; gap: 1rem; color: var(--color-text-muted); font-size: .88rem; margin: 0 0 .75rem; }
+  .status-pill { border: 1px solid var(--color-border); border-radius: 999px; padding: .2rem .65rem; }
+  .status-pill.is-dirty, .has-issues { color: var(--color-accent-orange); }
+  .editor-grid { display: grid; grid-template-columns: minmax(220px, .65fr) minmax(420px, 1.25fr) minmax(280px, .8fr); gap: 1rem; align-items: start; }
+  .entry-browser, .entry-workspace, .preview-panel { padding: 1.15rem; min-width: 0; }
+  .entry-browser { position: sticky; top: 1rem; max-height: calc(100vh - 2rem); display: flex; flex-direction: column; }
+  .browser-heading, .form-heading { display: flex; justify-content: space-between; gap: 1rem; align-items: flex-start; margin-bottom: 1rem; }
+  .browser-heading h2, .form-heading h2, .preview-panel h2 { margin: .2rem 0 0; font-size: 1.35rem; }
+  .icon-button { width: 2.6rem; height: 2.6rem; border-radius: 50%; font-size: 1.4rem; }
+  .entry-list { overflow: auto; display: grid; gap: .35rem; }
+  .entry-row { display: grid; gap: .25rem; text-align: left; width: 100%; padding: .7rem .8rem; background: transparent; border: 1px solid transparent; border-radius: var(--radius-small); color: var(--color-text); }
+  .entry-row:hover { background: var(--color-surface-soft); }
+  .entry-row.is-selected { border-color: var(--color-accent-green); background: var(--color-surface-soft); }
+  .entry-row strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .entry-row span, .field-help, .field-error, .preview-id, .empty-copy { color: var(--color-text-muted); font-size: .8rem; }
+  #entry-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+  .editor-field:has(textarea) { grid-column: 1 / -1; }
+  .editor-field input, .editor-field select, .editor-field textarea, dialog input, dialog textarea { width: 100%; }
+  .field-help, .field-error { margin: .35rem 0 0; }
+  .field-error { color: var(--color-accent-orange); min-height: 1em; }
+  .has-error :is(input, select, textarea) { border-color: var(--color-accent-orange); }
+  .danger-button { color: var(--color-accent-orange); background: transparent; border: 1px solid currentColor; }
+  .entry-preview { margin-top: 1rem; }
+  .entry-preview dl, .entry-preview dl > div { display: grid; gap: .35rem; }
+  .entry-preview dl { gap: 1rem; }
+  .entry-preview dt { text-transform: uppercase; letter-spacing: .08em; color: var(--color-text-muted); font-size: .72rem; font-weight: 700; }
+  .entry-preview dd { margin: 0; line-height: 1.55; overflow-wrap: anywhere; }
+  .entry-preview ul { margin: 0; padding-left: 1.2rem; }
+  dialog { width: min(560px, calc(100% - 2rem)); padding: 0; color: var(--color-text); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-large); box-shadow: var(--shadow-raised); }
+  dialog::backdrop { background: rgb(10 14 11 / .72); backdrop-filter: blur(3px); }
+  .dialog-card { display: grid; gap: 1rem; padding: 1.5rem; }
+  .dialog-card h2 { margin: .2rem 0; }
+  .dialog-actions { justify-content: flex-end; }
+  .form-errors { color: var(--color-accent-orange); padding: .75rem; border: 1px solid currentColor; border-radius: var(--radius-small); }
+  .unavailable { padding-block: 6rem; text-align: center; }
+  @media (max-width: 1100px) { .editor-grid { grid-template-columns: 240px 1fr; } .preview-panel { grid-column: 2; } }
+  @media (max-width: 760px) { .editor-shell { width: min(100% - 1rem, 1540px); padding-top: 1.5rem; } .editor-toolbar, .editor-grid { grid-template-columns: 1fr; } .toolbar-actions > * { flex: 1; } .entry-browser { position: static; max-height: 360px; } .preview-panel { grid-column: auto; } #entry-form { grid-template-columns: 1fr; } .editor-field { grid-column: 1; } .form-heading { display: grid; } }
+</style>
