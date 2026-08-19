@@ -59,6 +59,7 @@ All four datasets are validated when Astro imports them during the production bu
 
 ## Protected content editor
 
+
 The repository includes a form-based editor at `/editor/` with search, create, duplicate, delete, live validation, JSON import/export, previews, and GitHub pull-request publishing. It runs in the existing Vercel project: visit `https://lab.russvaccaro.com/editor/`, sign in with an approved GitHub account, make changes, and create a pull request.
 
 ### One-time GitHub App setup
@@ -77,5 +78,6 @@ The repository includes a form-based editor at `/editor/` with search, create, d
 6. Redeploy once so Vercel applies the variables.
 
 Authentication uses an eight-hour, signed, HTTP-only cookie. Every publish request verifies that session server-side before using the GitHub App to create a timestamped branch, commit changed JSON files, and open a pull request. It never merges directly. Do not put authentication or GitHub secrets in variables beginning with `PUBLIC_`.
+=======
 
 See `CONSOLIDATION_REPORT.md` for the source-folder comparison, intentional repetition, rejected conflicts, and merge decisions.
